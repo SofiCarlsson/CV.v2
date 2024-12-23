@@ -1,0 +1,26 @@
+﻿@model User
+
+<h2>Lägg till en ny Användare</h2>
+
+<form asp-action="Add" method="post">
+	<label>ID: </label>
+	<input asp-for="UserId" />
+	<br />
+	<label>Förnamn: </label>
+	<input asp-for="Firstname" />
+	<br />
+	<label>FörEfternamn: </label>
+	<input asp-for="Lastname" />
+	<br />
+	<label>Email: </label>
+	<input asp-for="Email" />
+	<br />
+	<label>Lösneord: </label>
+	<input asp-for="Password" />
+
+	<br />
+	<br />
+	<button type="submit">Lägg till</button>
+</form>
+
+<a asp-controller="Home" asp-action="Index">Gå tillbaka till lista</a>

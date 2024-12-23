@@ -1,0 +1,30 @@
+﻿@model List<User>
+
+<h2>Användare: </h2>
+
+<table class="table">
+	<thead>
+	<td>ID</td>
+	<td>Firstname</td>
+	<td>Lastname</td>
+	<td>Email</td>
+	<td>Password</td>
+	</thead>
+	<tbody>
+		@foreach (var user in Model)
+		{
+			<tr>
+				<td>@user.UserId</td>
+				<td>@user.Firstname</td>
+				<td>@user.Lastname</td>
+				<td>@user.Email</td>
+				<td>@user.Password</td>
+				<td>
+					<a asp-controller="User" asp-action="Remove" asp-route-id="@user.UserId">Radera</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+<a asp-controller="User" asp-action="Add">Lägg till ny Använadre.</a>
