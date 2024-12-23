@@ -7,9 +7,9 @@ namespace CV_v2.Controllers
 	public class HomeController : Controller
 	{
 		private readonly ILogger<HomeController> _logger;
-		private UserService users;
+		private UserContext users;
 
-		public HomeController(ILogger<HomeController> logger, UserService service)
+		public HomeController(ILogger<HomeController> logger, UserContext service)
 		{
 			_logger = logger;
 			users = service;

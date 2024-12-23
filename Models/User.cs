@@ -1,4 +1,6 @@
-﻿namespace CV_v2.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace CV_v2.Models
 {
 	public class User
 	{
@@ -7,5 +9,15 @@
 		public string Lastname { get; set; }
 		public string Email { get; set; }
 		public string Password { get; set; }
+		public int CVID { get; set; }
+
+		public virtual ICollection<Project> CreatedProjects { get; set; } = new List<Project>();
+
+		//Fk CV
+		[ForeignKey(nameof(CVID))]
+		public virtual CV CV { get; set; }
+
+		public virtual ICollection<Project> Projects { get; set; } = new List<Project>();
+
 	}
 }

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\carls\\Documents\\Örebro universitet\\.NET\\CV_v2\\CV_v2.csproj": {}
+    "C:\\Users\\carls\\Documents\\Örebro universitet\\.NET\\Projekt\\CV.v2\\CV_v2.csproj": {}
   },
   "projects": {
-    "C:\\Users\\carls\\Documents\\Örebro universitet\\.NET\\CV_v2\\CV_v2.csproj": {
+    "C:\\Users\\carls\\Documents\\Örebro universitet\\.NET\\Projekt\\CV.v2\\CV_v2.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\carls\\Documents\\Örebro universitet\\.NET\\CV_v2\\CV_v2.csproj",
+        "projectUniqueName": "C:\\Users\\carls\\Documents\\Örebro universitet\\.NET\\Projekt\\CV.v2\\CV_v2.csproj",
         "projectName": "CV_v2",
-        "projectPath": "C:\\Users\\carls\\Documents\\Örebro universitet\\.NET\\CV_v2\\CV_v2.csproj",
+        "projectPath": "C:\\Users\\carls\\Documents\\Örebro universitet\\.NET\\Projekt\\CV.v2\\CV_v2.csproj",
         "packagesPath": "C:\\Users\\carls\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\carls\\Documents\\Örebro universitet\\.NET\\CV_v2\\obj\\",
+        "outputPath": "C:\\Users\\carls\\Documents\\Örebro universitet\\.NET\\Projekt\\CV.v2\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\carls\\AppData\\Roaming\\NuGet\\NuGet.Config",

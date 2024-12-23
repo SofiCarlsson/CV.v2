@@ -5,9 +5,9 @@ namespace CV_v2.Controllers
 {
 	public class UserController : Controller
 	{
-		UserService users;
+		UserContext users;
 
-		public UserController(UserService service)
+		public UserController(UserContext service)
 		{
 			users = service;
 		}
@@ -27,7 +27,7 @@ namespace CV_v2.Controllers
 		}
 
 
-		//Remove funkar inte just nu, vet inte varför.
+		/*//Remove funkar inte just nu, vet inte varför.
 		[HttpGet]
 		public IActionResult Remove(int UserId)
 		{
@@ -40,7 +40,7 @@ namespace CV_v2.Controllers
 				}
 			}
 			return RedirectToAction("Index", "Home");
-		}
+		}*/
 
 
 	}
