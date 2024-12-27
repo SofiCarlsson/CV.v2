@@ -17,7 +17,7 @@ namespace CV_v2.Models
 		[ForeignKey(nameof(CVID))]
 		public virtual CV CV { get; set; }
 
-		public virtual ICollection<Project> Projects { get; set; } = new List<Project>();
+		public virtual ICollection<UserInProject> Projects { get; set; } = new List<UserInProject>();
 
 	}
 }
