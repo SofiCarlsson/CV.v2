@@ -1,10 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CV_v2.Models
 {
-    [PrimaryKey(nameof(UserId), nameof(ProjectId))]
-    public class UserInProject
+	public class UserInProject
 	{
 		public int UserId { get; set; }
 		[ForeignKey(nameof(UserId))]

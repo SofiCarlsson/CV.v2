@@ -14,7 +14,7 @@ namespace CV_v2.Models
 		[ForeignKey(nameof(CreatedBy))]
 		public virtual User User { get; set; }
 
-		public virtual ICollection<UserInProject> UsersInProject { get; set; } = new List<UserInProject>();
+		public virtual ICollection<User> UsersInProject { get; set; } = new List<User>();
 
 	}
 }

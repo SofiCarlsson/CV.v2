@@ -17,8 +17,7 @@ namespace CV_v2.Controllers
 
 		public IActionResult Index()
 		{
-            var usersList = users.Users.ToList();
-            return View(usersList);
+			return View(users);
 		}
 
 		public IActionResult Privacy()
