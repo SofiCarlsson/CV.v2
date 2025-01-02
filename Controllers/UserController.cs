@@ -1,5 +1,6 @@
 ﻿using CV_v2.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace CV_v2.Controllers
 {
@@ -12,18 +13,45 @@ namespace CV_v2.Controllers
 			users = service;
 		}
 
-		[HttpGet]
+        [HttpGet]
+        public IActionResult Index(string id)
+        {
+            Console.WriteLine("Index method reached");
+            Console.WriteLine("Id parameter: " + id);
+
+            IQueryable<User> userList = from user in users.Users select user;
+
+            if (!string.IsNullOrEmpty(id))
+            {
+                userList = userList.Where(user => user.Firstname.ToLower().Contains(id.ToLower()));
+            }
+
+            else
+            {
+                Console.WriteLine("No filtering applied");
+            }
+
+            Console.WriteLine($"Number of users found: {userList.Count()}");
+            return View("~/Views/Home/Index.cshtml", userList.ToList());
+        }
+
+        [HttpGet]
 		public IActionResult Add()
 		{
 			User user = new User();
-			return View(user);
+            List<SelectListItem> cvs = users.CVs.Select(x => new SelectListItem
+            { Text = x.CVId.ToString(), Value = x.CVId.ToString() }).ToList();
+            cvs.Insert(0, new SelectListItem { Text = "Inget CV", Value = "" });
+            ViewBag.options = cvs;
+            return View(user);
 		}
 
 		[HttpPost]
 		public IActionResult Add(User user)
 		{
-			users.Add(user);
-			return RedirectToAction("Index", "Home");
+            users.Add(user);
+			users.SaveChanges();
+            return RedirectToAction("Index", "Home");
 		}
 
         [HttpGet]
@@ -39,22 +67,20 @@ namespace CV_v2.Controllers
             return View("test");
         }
 
+        [HttpGet]
+        public IActionResult Remove(int id)
+        {
+            User user = users.Users.Find(id);
+            return View(user);
+        }
 
-        /*//Remove funkar inte just nu, vet inte varför.
-		[HttpGet]
-		public IActionResult Remove(int UserId)
-		{
-			for (int i = 0; i < users.Count; i++)
-			{
-				if (users.ElementAt(i).UserId.ToString().Equals(UserId.ToString()))
-				{
-					users.RemoveAt(i);
-					break;
-				}
-			}
-			return RedirectToAction("Index", "Home");
-		}*/
-
+        [HttpPost]
+        public IActionResult Remove(User user)
+        {
+            users.Remove(user);
+            users.SaveChanges();
+            return RedirectToAction("Index", "Home");
+        }
 
     }
 }

@@ -1,0 +1,14 @@
+﻿@model User
+
+@{
+	ViewData["Title"] = "Remove";
+}
+
+<h4>Är du säker på att du vill ta bort användaren: @Model.Firstname @Model.Lastname ?</h4>
+
+<form asp-action="Remove" method="post">
+	<input type="hidden" asp-for="UserId" />
+	<button type="submit">Ta bort</button>
+</form>
+
+<a asp-controller="Home" asp-action="Index">Återgå till startsidan</a>

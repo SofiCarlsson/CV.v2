@@ -3,22 +3,20 @@
 <h2>Lägg till en ny Användare</h2>
 
 <form asp-action="Add" method="post">
-	<label>ID: </label>
-	<input asp-for="UserId" />
 	<br />
 	<label>Förnamn: </label>
 	<input asp-for="Firstname" />
 	<br />
-	<label>FörEfternamn: </label>
+	<label>Efternamn: </label>
 	<input asp-for="Lastname" />
 	<br />
 	<label>Email: </label>
 	<input asp-for="Email" />
 	<br />
-	<label>Lösneord: </label>
+	<label>Lösenord: </label>
 	<input asp-for="Password" />
 	<label>CV: </label>
-	<input asp-for="CVID" />
+	<select asp-items="@ViewBag.options" asp-for="CVID"></select>
 
 	<br />
 	<br />

@@ -2,6 +2,12 @@
 
 <h2>Användare: </h2>
 
+<form asp-controller="User" form asp-action="Index" method="get">
+	<label for="firstNameFilter">Filtrera på förnamn:</label>
+	<input type="text" id="firstNameFilter" name="id" placeholder="Skriv in förnamn" />
+	<button type="submit">Filter</button>
+</form>
+
 <table class="table">
 	<thead>
 	<td>ID</td>
@@ -20,8 +26,15 @@
 				<td>@user.Lastname</td>
 				<td>@user.Email</td>
 				<td>@user.Password</td>
-				<td>@user.CVID</td>
 				<td>
+					@if (user.CV != null)
+					{
+						@user.CV.Competences
+					}
+					else
+					{
+						<span>Inget CV</span>
+					}
 					<a asp-controller="User" asp-action="Remove" asp-route-id="@user.UserId">Radera</a>
 				</td>
 			</tr>
