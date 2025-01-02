@@ -26,8 +26,21 @@ namespace CV_v2.Controllers
 			return RedirectToAction("Index", "Home");
 		}
 
+        [HttpGet]
+        public ActionResult Test()
+        {
+            return View("test");
+        }
 
-		/*//Remove funkar inte just nu, vet inte varför.
+        [HttpPost]
+        public ActionResult Test(string user)
+        {
+            ViewBag.User = user;
+            return View("test");
+        }
+
+
+        /*//Remove funkar inte just nu, vet inte varför.
 		[HttpGet]
 		public IActionResult Remove(int UserId)
 		{
@@ -43,5 +56,5 @@ namespace CV_v2.Controllers
 		}*/
 
 
-	}
+    }
 }
