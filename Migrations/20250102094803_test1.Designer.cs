@@ -3,6 +3,7 @@ using CV_v2.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CV_v2.Migrations
 {
     [DbContext(typeof(UserContext))]
-    partial class UserContextModelSnapshot : ModelSnapshot
+    [Migration("20250102094803_test1")]
+    partial class test1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,36 +50,6 @@ namespace CV_v2.Migrations
                     b.HasKey("CVId");
 
                     b.ToTable("CVs");
-
-                    b.HasData(
-                        new
-                        {
-                            CVId = 1,
-                            Competences = "SQL",
-                            Education = "Örebro Universitet",
-                            WorkExperience = "Tränare"
-                        },
-                        new
-                        {
-                            CVId = 2,
-                            Competences = "C#",
-                            Education = "Örebro Universitet",
-                            WorkExperience = "Arla Foods"
-                        },
-                        new
-                        {
-                            CVId = 3,
-                            Competences = "CSS, HTML",
-                            Education = "Örebro Universitet",
-                            WorkExperience = "PostNord"
-                        },
-                        new
-                        {
-                            CVId = 4,
-                            Competences = "Java",
-                            Education = "Örebro Universitet",
-                            WorkExperience = "IKEA"
-                        });
                 });
 
             modelBuilder.Entity("CV_v2.Models.Project", b =>
@@ -137,44 +110,6 @@ namespace CV_v2.Migrations
                     b.HasIndex("CVID");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1,
-                            CVID = 1,
-                            Email = "clara.lunak04@gmail.com",
-                            Firstname = "Clara",
-                            Lastname = "Lunak",
-                            Password = "svampnisse"
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            CVID = 2,
-                            Email = "carlssonsofi99@gmail.com",
-                            Firstname = "Sofi",
-                            Lastname = "Carlsson",
-                            Password = "juan123"
-                        },
-                        new
-                        {
-                            UserId = 3,
-                            CVID = 3,
-                            Email = "olivia.cleve@gmail.com",
-                            Firstname = "Olivia",
-                            Lastname = "Cleve",
-                            Password = "olivia123"
-                        },
-                        new
-                        {
-                            UserId = 4,
-                            CVID = 4,
-                            Email = "malin.sandberg@gmail.com",
-                            Firstname = "Malin",
-                            Lastname = "Sandberg",
-                            Password = "malin123"
-                        });
                 });
 
             modelBuilder.Entity("CV_v2.Models.UserInProject", b =>
