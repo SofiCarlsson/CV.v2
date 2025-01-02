@@ -35,7 +35,7 @@ namespace CV_v2.Migrations
                     Lastname = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CVID = table.Column<int>(type: "int", nullable: false)
+                    CVID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
