@@ -21,6 +21,7 @@ namespace CV_v2.Models
 					Competences = "SQL",
 					Education = "Örebro Universitet",
 					WorkExperience = "Tränare",
+					UserId = 1,
 				},
 				new CV
 				{
@@ -28,6 +29,7 @@ namespace CV_v2.Models
 					Competences = "C#",
 					Education = "Örebro Universitet",
 					WorkExperience = "Arla Foods",
+					UserId = 2,
 				},
 				new CV
 				{
@@ -35,6 +37,7 @@ namespace CV_v2.Models
 					Competences = "CSS, HTML",
 					Education = "Örebro Universitet",
 					WorkExperience = "PostNord",
+					UserId = 3,
 				},
 				new CV
 				{
@@ -42,6 +45,7 @@ namespace CV_v2.Models
 					Competences = "Java",
 					Education = "Örebro Universitet",
 					WorkExperience = "IKEA",
+					UserId = 4,
 				}
 			);
 
@@ -83,6 +87,12 @@ namespace CV_v2.Models
 					CVID = 4
 				}
 			);
-		}
-	}
+            modelBuilder.Entity<User>()
+  .HasOne(u => u.CV)
+  .WithOne()
+  .HasForeignKey<User>(u => u.CVID)
+  .OnDelete(DeleteBehavior.Cascade);
+
+        }
+    }
 }
