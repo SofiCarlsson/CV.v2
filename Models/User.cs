@@ -5,15 +5,15 @@ namespace CV_v2.Models
 {
 	public class User
 	{
-		[Required]
+		[Required(ErrorMessage = "Användar-ID måste anges")]
 		public int UserId { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Förnamn måste anges")]
         public string Firstname { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Efternamn måste anges")]
         public string Lastname { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Email måste anges")]
         public string Email { get; set; }
-        [Required]
+        [Required(ErrorMessage = "Lösenord måste anges")]
         public string Password { get; set; }
 		public int? CVID { get; set; }
 
