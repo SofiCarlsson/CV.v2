@@ -70,6 +70,7 @@ namespace CV_v2.Controllers
 
             _context.CVs.Add(newCV);
             _context.SaveChanges();
+
             return RedirectToAction("Index", "Home");
         }
     }
