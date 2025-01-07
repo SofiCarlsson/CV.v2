@@ -8,7 +8,8 @@ namespace CV_v2.Controllers
 	{
 		UserContext users;
 
-		public UserController(UserContext service)
+
+        public UserController(UserContext service)
 		{
 			users = service;
 		}
@@ -49,10 +50,20 @@ namespace CV_v2.Controllers
 		[HttpPost]
 		public IActionResult Add(User user)
 		{
-            users.Add(user);
-			users.SaveChanges();
-            return RedirectToAction("Index", "Home");
-		}
+            if (ModelState.IsValid)
+            {
+                users.Add(user);
+                users.SaveChanges();
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                List<SelectListItem> cvs = users.CVs.Select
+                    (x => new SelectListItem { Text = x.CVId.ToString(), Value = x.CVId.ToString() }).ToList();
+                ViewBag.options = cvs;
+                return View(user);
+            }
+        }
 
         [HttpGet]
         public ActionResult Test()
