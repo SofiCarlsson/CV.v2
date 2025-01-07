@@ -1,0 +1,21 @@
+﻿@model CV_v2.Models.CV
+
+<h2>Skapa CV</h2>
+
+<form asp-action="Create" asp-controller="CV" method="post">
+    <input type="hidden" asp-for="UserId" />
+
+    <div>
+        <label>Kompetenser:</label>
+        <input asp-for="Competences" class="form-control" />
+    </div>
+    <div>
+        <label>Utbildning:</label>
+        <input asp-for="Education" class="form-control" />
+    </div>
+    <div>
+        <label>Arbetserfarenhet:</label>
+        <input asp-for="WorkExperience" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Skapa CV</button>
+</form>

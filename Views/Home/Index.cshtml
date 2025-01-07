@@ -1,50 +1,53 @@
-﻿@model List<User>
+﻿@model List<CV_v2.Models.User>
 
 <h2>Användare: </h2>
 
 <form asp-controller="User" form asp-action="Index" method="get">
-	<label for="firstNameFilter">Filtrera på förnamn:</label>
-	<input type="text" id="firstNameFilter" name="id" placeholder="Skriv in förnamn" />
-	<button type="submit">Filter</button>
+    <label for="firstNameFilter">Filtrera på förnamn:</label>
+    <input type="text" id="firstNameFilter" name="id" placeholder="Skriv in förnamn" />
+    <button type="submit">Filter</button>
 </form>
 
 <table class="table">
-	<thead>
-	<td>ID</td>
-	<td>Firstname</td>
-	<td>Lastname</td>
-	<td>Email</td>
-	<td>Password</td>
-	<td>CV</td>
-	</thead>
-	<tbody>
-		@foreach (var user in Model)
-		{
-			<tr>
-				<td>@user.UserId</td>
-				<td>@user.Firstname</td>
-				<td>@user.Lastname</td>
-				<td>@user.Email</td>
-				<td>@user.Password</td>
-				<td>
-					@if (user.CV != null)
-					{
-						@user.CV.Competences
-					}
-					else
-					{
-						<span>Inget CV</span>
-					}
-					<a asp-controller="User" asp-action="Remove" asp-route-id="@user.UserId">Radera</a>
-				</td>
-			</tr>
-		}
-	</tbody>
-</table>
-<div>
-	<a asp-controller="User" asp-action="Add" class="btn">Lägg till ny Användare</a>
-</div>
-<div>
-	<a asp-controller="User" asp-action="Test" class="btn">Test</a>
-</div>
+    <thead>
+    <td>ID</td>
+    <td>Firstname</td>
+    <td>Lastname</td>
+    <td>Email</td>
+    <td>Password</td>
+    <td>CV</td>
+    </thead>
+    <tbody>
 
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.UserId</td>
+                <td>@user.Firstname</td>
+                <td>@user.Lastname</td>
+                <td>@user.Email</td>
+                <td>@user.Password</td>
+                <td>
+                    @if (user.CV != null)
+                    {
+                        <!-- Om användaren har ett CV, visa redigera-knappen -->
+                        <a asp-controller="CV" asp-action="Edit" asp-route-id="@user.CV.CVId" class="btn btn-warning">Redigera CV</a>
+                    }
+                    else
+                    {
+                        <!-- Om användaren inte har ett CV, visa skapa-knappen -->
+                        <a asp-controller="CV" asp-action="Create" asp-route-id="@user.UserId" class="btn btn-primary">Skapa CV</a>
+                    }
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <a asp-controller="User" asp-action="Add" class="btn">Lägg till ny Användare</a>
+</div>
+<div>
+    <a asp-controller="User" asp-action="Test" class="btn">Test</a>
+</div>
