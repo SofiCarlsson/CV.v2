@@ -40,9 +40,6 @@ namespace CV_v2.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.Property<string>("WorkExperience")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -57,7 +54,6 @@ namespace CV_v2.Migrations
                             CVId = 1,
                             Competences = "SQL",
                             Education = "Örebro Universitet",
-                            UserId = 1,
                             WorkExperience = "Tränare"
                         },
                         new
@@ -65,7 +61,6 @@ namespace CV_v2.Migrations
                             CVId = 2,
                             Competences = "C#",
                             Education = "Örebro Universitet",
-                            UserId = 2,
                             WorkExperience = "Arla Foods"
                         },
                         new
@@ -73,7 +68,6 @@ namespace CV_v2.Migrations
                             CVId = 3,
                             Competences = "CSS, HTML",
                             Education = "Örebro Universitet",
-                            UserId = 3,
                             WorkExperience = "PostNord"
                         },
                         new
@@ -81,7 +75,6 @@ namespace CV_v2.Migrations
                             CVId = 4,
                             Competences = "Java",
                             Education = "Örebro Universitet",
-                            UserId = 4,
                             WorkExperience = "IKEA"
                         });
                 });
@@ -141,9 +134,7 @@ namespace CV_v2.Migrations
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("CVID")
-                        .IsUnique()
-                        .HasFilter("[CVID] IS NOT NULL");
+                    b.HasIndex("CVID");
 
                     b.ToTable("Users");
 
@@ -215,9 +206,8 @@ namespace CV_v2.Migrations
             modelBuilder.Entity("CV_v2.Models.User", b =>
                 {
                     b.HasOne("CV_v2.Models.CV", "CV")
-                        .WithOne()
-                        .HasForeignKey("CV_v2.Models.User", "CVID")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .WithMany()
+                        .HasForeignKey("CVID");
 
                     b.Navigation("CV");
                 });
