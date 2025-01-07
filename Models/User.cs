@@ -1,20 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CV_v2.Models
 {
-	public class User
-	{
-		[Required(ErrorMessage = "Användar-ID måste anges")]
-		public int UserId { get; set; }
+	public class User : IdentityUser
+    {
         [Required(ErrorMessage = "Förnamn måste anges")]
         public string Firstname { get; set; }
-        [Required(ErrorMessage = "Efternamn måste anges")]
-        public string Lastname { get; set; }
-        [Required(ErrorMessage = "Email måste anges")]
-        public string Email { get; set; }
-        [Required(ErrorMessage = "Lösenord måste anges")]
-        public string Password { get; set; }
+     
+		[Required(ErrorMessage = "Efternamn måste anges")]
+		public string Lastname { get; set; }
+
 		public int? CVID { get; set; }
 
 		public virtual ICollection<Project> CreatedProjects { get; set; } = new List<Project>();

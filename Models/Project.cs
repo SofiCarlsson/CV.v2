@@ -9,7 +9,7 @@ namespace CV_v2.Models
 		public string Description { get; set; }
 
 		// 1:M FK user  CreatedBy (referens till User)
-		public int CreatedBy { get; set; }
+		public string CreatedBy { get; set; }
 		
 		[ForeignKey(nameof(CreatedBy))]
 		public virtual User User { get; set; }

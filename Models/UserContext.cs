@@ -1,16 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace CV_v2.Models
 {
-	public class UserContext : DbContext
-	{
+	public class UserContext : IdentityDbContext<User>
+    {
 		public UserContext(DbContextOptions<UserContext> options) : base(options)
 		{
 		}
-
-		public DbSet<User> Users { get; set; }
 		public DbSet<Project> Projects { get; set; }
-		public DbSet<CV> CVs { get; set; }
+
+        public DbSet<UserInProject> UserInProjects { get; set; }
+        public DbSet<CV> CVs { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -84,6 +86,13 @@ namespace CV_v2.Models
             //	}
             //);
 
+            base.OnModelCreating(modelBuilder);
+
+            // Se till att IdentityUserLogin har en primärnyckel
+            modelBuilder.Entity<IdentityUserLogin<string>>(entity =>
+            {
+                entity.HasKey(e => e.UserId); // Sätt primärnyckel
+            });
 
             modelBuilder.Entity<User>()
       .HasOne(u => u.CV)

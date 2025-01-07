@@ -6,7 +6,7 @@ namespace CV_v2.Models
     [PrimaryKey(nameof(UserId), nameof(ProjectId))]
     public class UserInProject
 	{
-		public int UserId { get; set; }
+		public string UserId { get; set; }
 		[ForeignKey(nameof(UserId))]
 		public virtual User User { get; set; }
 		public int ProjectId { get; set; }

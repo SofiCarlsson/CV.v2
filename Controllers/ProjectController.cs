@@ -65,7 +65,7 @@ namespace CV_v2.Controllers
             List<SelectListItem> users = _context.Users.Select(x => new SelectListItem
             {
                 Text = x.Firstname + " " + x.Lastname,
-                Value = x.UserId.ToString()
+                Value = x.Id
             }).ToList();
 
             users.Insert(0, new SelectListItem { Text = "Select a user", Value = "" });
@@ -88,7 +88,7 @@ namespace CV_v2.Controllers
                 List<SelectListItem> users = _context.Users.Select(x => new SelectListItem
                 {
                     Text = x.Firstname + " " + x.Lastname,
-                    Value = x.UserId.ToString()
+                    Value = x.Id
                 }).ToList();
 
                 ViewBag.Users = users;

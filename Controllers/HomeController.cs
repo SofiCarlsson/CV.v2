@@ -16,12 +16,12 @@ namespace CV_v2.Controllers
             users = service;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             // Ladda användare och deras tillhörande CV
-            var usersList = users.Users
+            var usersList = await users.Users
                 .Include(u => u.CV) // Inkludera relaterade CV-objekt
-                .ToList();
+                .ToListAsync();
 
             return View(usersList);
         }
