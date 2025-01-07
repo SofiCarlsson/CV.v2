@@ -1,4 +1,5 @@
 ﻿using CV_v2.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -65,6 +66,7 @@ namespace CV_v2.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet]
         public ActionResult Test()
         {

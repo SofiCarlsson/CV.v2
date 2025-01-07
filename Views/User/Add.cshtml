@@ -12,11 +12,15 @@
 	<label>Efternamn: </label>
 	<input asp-for="Lastname" />
 	<br />
+	<label>Användarnamn: </label>
+	<input asp-for="UserName" />
+	<br />
 	<label>Email: </label>
 	<input asp-for="Email" />
 	<br />
 	<label>Lösenord: </label>
 	<input asp-for="PasswordHash" />
+	<br />
 	<label>CV: </label>
 	<select asp-items="@ViewBag.options" asp-for="CVID"></select>
 

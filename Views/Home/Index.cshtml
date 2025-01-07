@@ -1,5 +1,14 @@
 ﻿@model List<CV_v2.Models.User>
 
+
+<form method="post" asp-controller="Account" asp-action="Logout">
+    @if (User.Identity.IsAuthenticated)
+    {
+        <h4>Du är inloggad som @User.Identity.Name</h4>
+        <input type="submit" value="Logga ut" />
+    }
+</form>
+
 <h2>Användare: </h2>
 
 <form asp-controller="User" form asp-action="Index" method="get">
@@ -10,12 +19,13 @@
 
 <table class="table">
     <thead>
-    <td>ID</td>
-    <td>Firstname</td>
-    <td>Lastname</td>
-    <td>Email</td>
-    <td>Password</td>
-    <td>CV</td>
+        <td>ID</td>
+        <td>Firstname</td>
+        <td>Lastname</td>
+        <td>Email</td>
+        <td>Användarnamn</td>
+        <td>Password</td>
+        <td>CV</td>
     </thead>
     <tbody>
 
@@ -26,8 +36,11 @@
                 <td>@user.Firstname</td>
                 <td>@user.Lastname</td>
                 <td>@user.Email</td>
+                <td>@user.UserName</td>
                 <td>@user.PasswordHash</td>
                 <td>
+                @if (User.Identity.IsAuthenticated) 
+                {
                     @if (user.CV != null)
                     {
                         <!-- Om användaren har ett CV, visa redigera-knappen -->
@@ -38,6 +51,8 @@
                         <!-- Om användaren inte har ett CV, visa skapa-knappen -->
                         <a asp-controller="CV" asp-action="Create" asp-route-id="@user.Id" class="btn btn-primary">Skapa CV</a>
                     }
+                }
+                
 
                 </td>
             </tr>
@@ -51,3 +66,13 @@
 <div>
     <a asp-controller="User" asp-action="Test" class="btn">Test</a>
 </div>
+
+<br />
+<br />
+<br />
+@if (!User.Identity.IsAuthenticated)
+{
+    <a asp-action="Login" asp-controller="Account">Logga in</a>
+}
+
+
