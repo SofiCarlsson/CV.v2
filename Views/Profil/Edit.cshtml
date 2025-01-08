@@ -1,0 +1,38 @@
+﻿@model EditProfileViewModel
+
+<h2>Redigera Profil</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label for="Firstname">Förnamn</label>
+        <input type="text" class="form-control" id="Firstname" name="Firstname" value="@Model.Firstname" required />
+    </div>
+    <div class="form-group">
+        <label for="Lastname">Efternamn</label>
+        <input type="text" class="form-control" id="Lastname" name="Lastname" value="@Model.Lastname" required />
+    </div>
+    <div class="form-group">
+        <label for="Email">E-post</label>
+        <input type="email" class="form-control" id="Email" name="Email" value="@Model.Email" required />
+    </div>
+    <div class="form-group">
+        <label for="CVId">CV</label>
+        <select class="form-control" id="CVId" name="CVId">
+            <option value="0">Inget CV</option>
+            @if (ViewBag.CVOptions != null)
+            {
+                <ul>
+                    @foreach (var cv in ViewBag.CVOptions)
+                    {
+                        <li>@cv</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Inga CV-alternativ tillgängliga.</p>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Uppdatera</button>
+</form>
