@@ -81,7 +81,7 @@ namespace CV_v2.Controllers
         }
 
         [HttpGet]
-        public IActionResult Remove(int id)
+        public IActionResult Remove(string id)
         {
             User user = users.Users.Find(id);
             return View(user);

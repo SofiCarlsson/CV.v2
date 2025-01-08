@@ -4,6 +4,7 @@ using CV_v2.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CV_v2.Migrations
 {
     [DbContext(typeof(UserContext))]
-    partial class UserContextModelSnapshot : ModelSnapshot
+    [Migration("20250108130642_abcd")]
+    partial class abcd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,16 +36,26 @@ namespace CV_v2.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CVId"));
 
-                    b.Property<string>("CompetencesHej")
+                    b.Property<string>("Competences")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Education")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("WorkExperience")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("CVId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("CVs");
                 });
@@ -138,10 +151,6 @@ namespace CV_v2.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CVID")
-                        .IsUnique()
-                        .HasFilter("[CVID] IS NOT NULL");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -299,6 +308,17 @@ namespace CV_v2.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("CV_v2.Models.CV", b =>
+                {
+                    b.HasOne("CV_v2.Models.User", "User")
+                        .WithOne("CV")
+                        .HasForeignKey("CV_v2.Models.CV", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("CV_v2.Models.Project", b =>
                 {
                     b.HasOne("CV_v2.Models.User", "User")
@@ -308,15 +328,6 @@ namespace CV_v2.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("CV_v2.Models.User", b =>
-                {
-                    b.HasOne("CV_v2.Models.CV", "CV")
-                        .WithOne("User")
-                        .HasForeignKey("CV_v2.Models.User", "CVID");
-
-                    b.Navigation("CV");
                 });
 
             modelBuilder.Entity("CV_v2.Models.UserInProject", b =>
@@ -389,12 +400,6 @@ namespace CV_v2.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CV_v2.Models.CV", b =>
-                {
-                    b.Navigation("User")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("CV_v2.Models.Project", b =>
                 {
                     b.Navigation("UsersInProject");
@@ -402,6 +407,8 @@ namespace CV_v2.Migrations
 
             modelBuilder.Entity("CV_v2.Models.User", b =>
                 {
+                    b.Navigation("CV");
+
                     b.Navigation("CreatedProjects");
 
                     b.Navigation("Projects");
