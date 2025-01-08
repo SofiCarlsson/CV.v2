@@ -2,6 +2,20 @@
 
 <h2>Redigera Profil</h2>
 
+<!-- Visa bekräftelsemeddelande om det finns något i TempData -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+else if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <form method="post">
     <div class="form-group">
         <label for="Firstname">Förnamn</label>
@@ -21,12 +35,10 @@
             <option value="0">Inget CV</option>
             @if (ViewBag.CVOptions != null)
             {
-                <ul>
-                    @foreach (var cv in ViewBag.CVOptions)
-                    {
-                        <li>@cv</li>
-                    }
-                </ul>
+                @foreach (var cv in ViewBag.CVOptions)
+                {
+                    <option value="@cv">@cv</option>
+                }
             }
             else
             {

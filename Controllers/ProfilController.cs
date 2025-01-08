@@ -88,6 +88,9 @@ public class ProfilController : Controller
             }
 
             await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Profilen har uppdaterats";
+
             return RedirectToAction("Edit");
         }
 
