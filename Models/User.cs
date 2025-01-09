@@ -11,6 +11,8 @@ namespace CV_v2.Models
 
         [Required(ErrorMessage = "Efternamn måste anges")]
         public string Lastname { get; set; }
+        // Adress för användaren
+        public string Address { get; set; } // Lägg till en enkel adress
 
         public bool IsProfilePrivate { get; set; }
 
