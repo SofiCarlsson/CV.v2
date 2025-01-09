@@ -37,7 +37,7 @@ namespace CV_v2.Controllers
             var existingCV = _context.CVs.FirstOrDefault(c => c.CVId == updatedCV.CVId);
             if (existingCV != null)
             {
-                existingCV.CompetencesHej = updatedCV.CompetencesHej;
+                existingCV.Competences = updatedCV.Competences;
                 existingCV.Education = updatedCV.Education;
                 existingCV.WorkExperience = updatedCV.WorkExperience;
 

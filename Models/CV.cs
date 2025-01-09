@@ -13,7 +13,7 @@ namespace CV_v2.Models
         public virtual User User { get; set; }
         // Lägg till UserId för att koppla CV till en användare
         //public string UserId { get; set; }  // Detta ska vara samma typ som User.Id
-        public string? CompetencesHej { get; set; }
+        public string? Competences { get; set; }
 		public string? Education { get; set; }
 		public string? WorkExperience { get; set; }
 
