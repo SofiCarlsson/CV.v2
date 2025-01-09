@@ -4,101 +4,92 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CV_v2.Models
 {
-	public class UserContext : IdentityDbContext<User>
+    public class UserContext : IdentityDbContext<User>
     {
-		public UserContext(DbContextOptions<UserContext> options) : base(options)
-		{
-		}
-		public DbSet<Project> Projects { get; set; }
+        public UserContext(DbContextOptions<UserContext> options) : base(options)
+        {
+        }
 
+        // DbSet för alla entiteter
+        public DbSet<Project> Projects { get; set; }
         public DbSet<UserInProject> UserInProjects { get; set; }
         public DbSet<CV> CVs { get; set; }
+        public DbSet<CvCompetences> CvCompetences { get; set; }
+        public DbSet<Competences> Competences { get; set; }
+        public DbSet<CvEducation> CvEducations { get; set; }
+        public DbSet<Education> Educations { get; set; }
+        public DbSet<CvWorkExperience> CvWorkExperiences { get; set; }
+        public DbSet<WorkExperience> WorkExperiences { get; set; }
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-            //modelBuilder.Entity<CV>().HasData(
-            //	new CV
-            //	{
-            //		CVId = 1,
-            //		Competences = "SQL",
-            //		Education = "Örebro Universitet",
-            //		WorkExperience = "Tränare",
-            //	},
-            //	new CV
-            //	{
-            //		CVId = 2,
-            //		Competences = "C#",
-            //		Education = "Örebro Universitet",
-            //		WorkExperience = "Arla Foods",
-            //	},
-            //	new CV
-            //	{
-            //		CVId = 3,
-            //		Competences = "CSS, HTML",
-            //		Education = "Örebro Universitet",
-            //		WorkExperience = "PostNord",
-            //	},
-            //	new CV
-            //	{
-            //		CVId = 4,
-            //		Competences = "Java",
-            //		Education = "Örebro Universitet",
-            //		WorkExperience = "IKEA",
-            //	}
-            //);
 
-            //modelBuilder.Entity<User>().HasData(
-            //	new User
-            //	{
-            //		UserId = 1,
-            //		Firstname = "Clara",
-            //		Lastname = "Lunak",
-            //		Email = "clara.lunak04@gmail.com",
-            //		Password = "svampnisse",
-            //		CVID = 1
-            //	},
-            //	new User
-            //	{
-            //		UserId = 2,
-            //		Firstname = "Sofi",
-            //		Lastname = "Carlsson",
-            //		Email = "carlssonsofi99@gmail.com",
-            //		Password = "juan123",
-            //		CVID = 2
-            //	},
-            //	new User
-            //	{
-            //		UserId = 3,
-            //		Firstname = "Olivia",
-            //		Lastname = "Cleve",
-            //		Email = "olivia.cleve@gmail.com",
-            //		Password = "olivia123",
-            //		CVID = 3
-            //	},
-            //	new User
-            //	{
-            //		UserId = 4,
-            //		Firstname = "Malin",
-            //		Lastname = "Sandberg",
-            //		Email = "malin.sandberg@gmail.com",
-            //		Password = "malin123",
-            //		CVID = 4
-            //	}
-            //);
-
+        //Ska vara namnet på modellkalsserna
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
             base.OnModelCreating(modelBuilder);
 
-            // Se till att IdentityUserLogin har en primärnyckel
-            modelBuilder.Entity<IdentityUserLogin<string>>(entity =>
-            {
-                entity.HasKey(e => e.UserId); // Sätt primärnyckel
-            });
+            // Definiera tabellnamn för användare
+            modelBuilder.Entity<User>().ToTable("Users");
 
-            modelBuilder.Entity<User>()
-      .HasOne(u => u.CV)
-      .WithOne()
-      .HasForeignKey<User>(u => u.CVID)
-      .OnDelete(DeleteBehavior.Cascade);
+            // Många-till-många relation mellan User och Project via UserInProject
+            modelBuilder.Entity<UserInProject>()
+                .HasOne(uip => uip.User)
+                .WithMany(u => u.UserInProjects)  // Ändrat från UserInProject till UserInProjects
+                .HasForeignKey(uip => uip.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<UserInProject>()
+                .HasOne(uip => uip.Project)
+                .WithMany(p => p.UsersInProject)  // Ändrat från UserInProject till UserInProjects
+                .HasForeignKey(uip => uip.ProjectId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // Många-till-många relation mellan CV och Kompetenser via CvCompetences
+            modelBuilder.Entity<CvCompetences>()
+                .HasKey(cc => new { cc.CVID, cc.CompetencesID });
+
+            modelBuilder.Entity<CvCompetences>()
+                .HasOne(cc => cc.CV)
+                .WithMany(c => c.Competences)
+                .HasForeignKey(cc => cc.CVID)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<CvCompetences>()
+                .HasOne(cc => cc.Competences)
+                .WithMany(c => c.CvCompetences)
+                .HasForeignKey(cc => cc.CompetencesID)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // Många-till-många relation mellan CV och Utbildning via CvEducation
+            modelBuilder.Entity<CvEducation>()
+                .HasKey(ce => new { ce.CVID, ce.EducationID });
+
+            modelBuilder.Entity<CvEducation>()
+                .HasOne(ce => ce.CV)
+                .WithMany(c => c.Educations)
+                .HasForeignKey(ce => ce.CVID)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<CvEducation>()
+                .HasOne(cv => cv.Education)//CV
+                .WithMany(e => e.CVEducations) 
+                .HasForeignKey(ce => ce.EducationID)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // Många-till-många relation mellan CV och ArbetsErfarenhet via CvWorkExperience
+            modelBuilder.Entity<CvWorkExperience>()
+                .HasKey(cwe => new { cwe.CVID, cwe.WorkExperienceID });
+
+            modelBuilder.Entity<CvWorkExperience>()
+                .HasOne(cwe => cwe.CV)
+                .WithMany(c => c.WorkExperiences)
+                .HasForeignKey(cwe => cwe.CVID)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<CvWorkExperience>()
+                .HasOne(cwe => cwe.WorkExperience)
+                .WithMany(w => w.CVWorkExperiences)
+                .HasForeignKey(cwe => cwe.WorkExperienceID)
+                .OnDelete(DeleteBehavior.NoAction);
         }
-	}
+    }
 }
