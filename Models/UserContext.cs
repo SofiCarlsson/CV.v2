@@ -20,6 +20,7 @@ namespace CV_v2.Models
         public DbSet<Education> Educations { get; set; }
         public DbSet<CvWorkExperience> CvWorkExperiences { get; set; }
         public DbSet<WorkExperience> WorkExperiences { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
 
         //Ska vara namnet på modellkalsserna
@@ -89,6 +90,19 @@ namespace CV_v2.Models
                 .HasOne(cwe => cwe.WorkExperience)
                 .WithMany(w => w.CVWorkExperiences)
                 .HasForeignKey(cwe => cwe.WorkExperienceID)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // Definiera relationen för Message
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.FranUser)
+                .WithMany() // En användare kan ha många meddelanden som avsändare
+                .HasForeignKey(m => m.FranUserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.TillUser)
+                .WithMany() // En användare kan ha många meddelanden som mottagare
+                .HasForeignKey(m => m.TillUserId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }
