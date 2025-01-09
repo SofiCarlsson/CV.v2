@@ -5,17 +5,22 @@
 <form asp-action="Create" asp-controller="CV" method="post">
     <input type="hidden" asp-for="UserId" />
 
-    <div>
-        <label>Kompetenser:</label>
-        <input asp-for="Competences" class="form-control" />
+    <div id="competences-section">
+            <label>Kompetenser:</label>
+        <div class="competence-row">
+            <select asp-items="@ViewBag.CompetenceOptions" asp-for="Competences" multiple></select>
+            <a asp-controller="CV" asp-action="AddCompetence" class="btn btn-primary">Lägg till ny kompetens</a>
+        </div>
     </div>
-    <div>
+    <div id ="education-section">
         <label>Utbildning:</label>
-        <input asp-for="Educations" class="form-control" />
+        <select asp-items="@ViewBag.EducationOptions" asp-for="Educations" multiple></select>
+        <a asp-controller="CV" asp-action="AddEducation" class="btn btn-primary">Lägg till ny utbildning</a>
     </div>
-    <div>
+    <div id ="workExperience-section">
         <label>Arbetserfarenhet:</label>
-        <input asp-for="WorkExperiences" class="form-control" />
+        <select asp-items="@ViewBag.WorkExperienceOptions" asp-for="WorkExperiences" multiple></select>
+        <a asp-controller="CV" asp-action="AddWorkExperience" class="btn btn-primary">Lägg till ny arbetserfarenhet</a>
     </div>
     <button type="submit" class="btn btn-primary mt-3">Skapa CV</button>
 </form>

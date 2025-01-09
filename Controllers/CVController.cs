@@ -1,5 +1,6 @@
 ﻿using CV_v2.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 
 namespace CV_v2.Controllers
@@ -56,22 +57,149 @@ namespace CV_v2.Controllers
             {
                 UserId = id // Kopplar CV till rätt användare
             };
+            // Förbered alternativ för dropdown-menyer
+            ViewBag.CompetenceOptions = _context.Competences
+                .Select(c => new SelectListItem
+                {
+                    Value = c.CompetencesID.ToString(),
+                    Text = c.CompetenceName
+                })
+                .ToList();
+
+            ViewBag.EducationOptions = _context.Educations
+                .Select(e => new SelectListItem
+                {
+                    Value = e.EducationID.ToString(),
+                    Text = e.Degree + " - " + e.SchoolName
+                })
+                .ToList();
+
+            ViewBag.WorkExperienceOptions = _context.WorkExperiences
+                .Select(w => new SelectListItem
+                {
+                    Value = w.WorkExperienceID.ToString(),
+                    Text = w.WorkTitle
+                })
+                .ToList();
+
             return View(newCV);
         }
 
         // POST: Create CV
         [HttpPost]
-        public IActionResult Create(CV newCV)
+        public IActionResult Create(CV newCV, List<int> selectedCompetences, List<int> selectedEducations, List<int> selectedWorkExperiences)
         {
             if (!ModelState.IsValid)
             {
-                return View(newCV);
+                // Om valideringen misslyckas, ladda om dropdown-alternativen
+                ViewBag.CompetenceOptions = _context.Competences
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.CompetencesID.ToString(),
+                        Text = c.CompetenceName
+                    })
+                    .ToList();
+
+                ViewBag.EducationOptions = _context.Educations
+                    .Select(e => new SelectListItem
+                    {
+                        Value = e.EducationID.ToString(),
+                        Text = e.Degree + " - " + e.SchoolName
+                    })
+                    .ToList();
+
+                ViewBag.WorkExperienceOptions = _context.WorkExperiences
+                    .Select(w => new SelectListItem
+                    {
+                        Value = w.WorkExperienceID.ToString(),
+                        Text = w.WorkTitle
+                    })
+                    .ToList();
+
+                return View(newCV); // Skicka tillbaka formuläret om valideringen misslyckas
             }
 
             _context.CVs.Add(newCV);
             _context.SaveChanges();
 
+            // Koppla valda kompetenser till CV:t
+            foreach (var competenceId in selectedCompetences)
+            {
+                var cvCompetence = new CvCompetences
+                {
+                    CVID = newCV.CVId,
+                    CompetencesID = competenceId
+                };
+                _context.CvCompetences.Add(cvCompetence);
+            }
+
+            // Koppla valda utbildningar till CV:t
+            foreach (var educationId in selectedEducations)
+            {
+                var cvEducation = new CvEducation
+                {
+                    CVID = newCV.CVId,
+                    EducationID = educationId
+                };
+                _context.CvEducations.Add(cvEducation);
+            }
+
+            // Koppla valda arbetserfarenheter till CV:t
+            foreach (var workExperienceId in selectedWorkExperiences)
+            {
+                var cvWorkExperience = new CvWorkExperience
+                {
+                    CVID = newCV.CVId,
+                    WorkExperienceID = workExperienceId
+                };
+                _context.CvWorkExperiences.Add(cvWorkExperience);
+            }
+
+            // Spara ändringar i databasen
+            _context.SaveChanges();
+
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public IActionResult AddEducation()
+        {
+            return View("AddEducation");
+        }
+
+        [HttpGet]
+        public IActionResult AddWorkExperience()
+        {
+            return View("AddWorkExperience");
+        }
+
+        [HttpGet]
+        public IActionResult AddCompetence(int? id)
+        {
+            if (id == null) // Skapa ny kompetens
+            {
+                return View(new Competences());
+            }
+
+            var competence = _context.Competences.Find(id);
+            if (competence == null)
+            {
+                return NotFound();
+            }
+
+            return View(competence);
+        }
+
+        [HttpPost]
+        public IActionResult AddCompetence(Competences competence)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Competences.Add(competence);
+                _context.SaveChanges();
+                return RedirectToAction("Create", "CV");
+            }
+            return View(competence);
         }
     }
 }
