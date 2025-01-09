@@ -29,7 +29,8 @@ namespace CV_v2.Controllers
                 {
                     UserName = registerViewModel.Username,
                     Firstname = registerViewModel.Firstname,
-                    Lastname = registerViewModel.Lastname
+                    Lastname = registerViewModel.Lastname,
+                    Address = registerViewModel.Address
                 };
 
                 var result =
