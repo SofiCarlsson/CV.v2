@@ -27,9 +27,6 @@ namespace CV_v2.Models
 
         // Samling av UserInProject för att representera användarens associationer till projekt
         public virtual ICollection<UserInProject> UserInProjects { get; set; } = new List<UserInProject>();
-
-        // Samling av projekt via UserInProject
-        public virtual ICollection<Project> Projects { get; set; } = new List<Project>();
     }
 }
 

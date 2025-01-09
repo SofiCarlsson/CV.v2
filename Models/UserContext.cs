@@ -31,6 +31,20 @@ namespace CV_v2.Models
             // Definiera tabellnamn för användare
             modelBuilder.Entity<User>().ToTable("Users");
 
+            //1-1 förhållande CV
+            modelBuilder.Entity<CV>()
+                .HasOne(c => c.User)                // Ett CV har en User
+                .WithOne(u => u.CV)                 // En User har ett CV
+                .HasForeignKey<CV>(c => c.UserId)   // Använd UserId som foreign key i CV
+                .OnDelete(DeleteBehavior.Cascade);  // Om du vill att CV ska tas bort om användaren tas bort
+
+            // Konfigurera relationen mellan Project och User
+            modelBuilder.Entity<Project>()
+                .HasOne(p => p.User)
+                .WithMany()  // Om en User kan ha flera projekt (1:N relation)
+                .HasForeignKey(p => p.CreatedBy)
+                .OnDelete(DeleteBehavior.Restrict);  // Ange önskat beteende vid borttagning av användare
+
             // Många-till-många relation mellan User och Project via UserInProject
             modelBuilder.Entity<UserInProject>()
                 .HasOne(uip => uip.User)
@@ -72,7 +86,7 @@ namespace CV_v2.Models
 
             modelBuilder.Entity<CvEducation>()
                 .HasOne(cv => cv.Education)//CV
-                .WithMany(e => e.CVEducations) 
+                .WithMany(e => e.CVEducations)
                 .HasForeignKey(ce => ce.EducationID)
                 .OnDelete(DeleteBehavior.NoAction);
 

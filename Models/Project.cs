@@ -17,8 +17,5 @@ namespace CV_v2.Models
 
         // Många-till-många-relation mellan User och Project via UserInProject
         public virtual ICollection<UserInProject> UsersInProject { get; set; } = new List<UserInProject>();
-
-        // Navigeringsegenskap för projekt som användaren är associerad med via UserInProject
-        public virtual ICollection<User> Users { get; set; } = new List<User>();
     }
 }

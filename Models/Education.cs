@@ -7,7 +7,7 @@
         public string Degree { get; set; }
         public DateTime EducationStartDate { get; set; }
         public DateTime EducationEndDate { get; set; }
-        public ICollection<CvEducation> CVEducations { get; set; }
+        public virtual ICollection<CvEducation> CVEducations { get; set; }
 
 
     }

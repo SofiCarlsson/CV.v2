@@ -13,7 +13,7 @@ namespace CV_v2.Models
         //Navigering till User.
         public virtual User User { get; set; }
         // Lägg till UserId för att koppla CV till en användare
-        //public string UserId { get; set; }  // Detta ska vara samma typ som User.Id
+        public string UserId { get; set; }  // Detta ska vara samma typ som User.Id
         [NotMapped]
         public IFormFile? BildFil { get; set; }
 

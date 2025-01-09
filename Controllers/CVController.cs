@@ -38,8 +38,8 @@ namespace CV_v2.Controllers
             if (existingCV != null)
             {
                 existingCV.Competences = updatedCV.Competences;
-                existingCV.Education = updatedCV.Education;
-                existingCV.WorkExperience = updatedCV.WorkExperience;
+                existingCV.Educations = updatedCV.Educations;
+                existingCV.WorkExperiences = updatedCV.WorkExperiences;
 
                 _context.SaveChanges();
                 return RedirectToAction("Index", "Home");
@@ -50,7 +50,7 @@ namespace CV_v2.Controllers
 
         // GET: Create CV
         [HttpGet]
-        public IActionResult Create(int id)
+        public IActionResult Create(string id)
         {
             var newCV = new CV
             {

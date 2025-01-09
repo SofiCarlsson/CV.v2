@@ -7,7 +7,7 @@
         public string Description { get; set; }
         public DateTime WorkStartDate { get; set; }
         public DateTime WorkEndDate { get; set; }
-        public ICollection<CvWorkExperience> CVWorkExperiences { get; set; }
+        public virtual ICollection<CvWorkExperience> CVWorkExperiences { get; set; }
 
     }
 }
