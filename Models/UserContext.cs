@@ -13,6 +13,7 @@ namespace CV_v2.Models
         // DbSet för alla entiteter
         public DbSet<Project> Projects { get; set; }
         public DbSet<UserInProject> UserInProjects { get; set; }
+        public DbSet<User> Users { get; set; }
         public DbSet<CV> CVs { get; set; }
         public DbSet<CvCompetences> CvCompetences { get; set; }
         public DbSet<Competences> Competences { get; set; }

@@ -15,3 +15,5 @@ namespace CV_v2.Models
 		public virtual Project Project { get; set; }
 	}
 }
+
+

@@ -18,8 +18,8 @@ namespace CV_v2.Controllers
         [HttpGet]
         public IActionResult ShowProjects()
         {
-            var projects = _context.Projects.ToList();  // Hämtar alla projekt från databasen
-            return View(projects);  // Razor söker nu automatiskt i /Views/Project/ShowProjects.cshtml
+            var projects = _context.Projects.ToList();
+            return View(projects);
         }
 
         // GET: Show form to add a new project
@@ -35,7 +35,7 @@ namespace CV_v2.Controllers
             users.Insert(0, new SelectListItem { Text = "Select a user", Value = "" });
             ViewBag.Users = users;
 
-            return View(); // Razor söker i /Views/Project/Add.cshtml
+            return View();
         }
 
         // POST: Handle adding a new project
@@ -44,20 +44,44 @@ namespace CV_v2.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (string.IsNullOrEmpty(project.CreatedBy))
+                {
+                    ModelState.AddModelError("CreatedBy", "Välj en användare för att skapa projektet.");
+                    List<SelectListItem> Users = _context.Users.Select(x => new SelectListItem
+                    {
+                        Text = x.Firstname + " " + x.Lastname,
+                        Value = x.Id
+                    }).ToList();
+                    ViewBag.Users = Users;
+                    return View(project);
+                }
+
+                var user = _context.Users.Find(project.CreatedBy);
+                if (user != null)
+                {
+                    project.User = user;
+                }
+
                 _context.Projects.Add(project);
                 _context.SaveChanges();
-                return RedirectToAction("ShowProjects");  // Omdirigera till ShowProjects efter att projektet är skapat
+
+                _context.UserInProjects.Add(new UserInProject
+                {
+                    UserId = project.CreatedBy,
+                    ProjectId = project.ProjectID
+                });
+
+                _context.SaveChanges();
+                return RedirectToAction("ShowProjects");
             }
 
-            // Om modellen inte är giltig, ladda om formuläret med användare
             List<SelectListItem> users = _context.Users.Select(x => new SelectListItem
             {
                 Text = x.Firstname + " " + x.Lastname,
                 Value = x.Id
             }).ToList();
-
             ViewBag.Users = users;
-            return View(project); // Razor söker i /Views/Project/Add.cshtml
+            return View(project);
         }
 
         // GET: Show form to edit an existing project
@@ -67,7 +91,7 @@ namespace CV_v2.Controllers
             var project = _context.Projects.Find(projectID);
             if (project == null)
             {
-                return NotFound(); // Returnera 404 om projektet inte hittas
+                return NotFound();
             }
 
             List<SelectListItem> users = _context.Users.Select(x => new SelectListItem
@@ -77,7 +101,7 @@ namespace CV_v2.Controllers
             }).ToList();
 
             ViewBag.Users = users;
-            return View(project); // Razor söker i /Views/Project/EditProjects.cshtml
+            return View(project);
         }
 
         // POST: Handle editing an existing project
@@ -88,10 +112,9 @@ namespace CV_v2.Controllers
             {
                 _context.Projects.Update(project);
                 _context.SaveChanges();
-                return RedirectToAction("ShowProjects");  // Omdirigera tillbaka till ShowProjects efter uppdatering
+                return RedirectToAction("ShowProjects");
             }
 
-            // Om modellen inte är giltig, ladda om formuläret med användare
             List<SelectListItem> users = _context.Users.Select(x => new SelectListItem
             {
                 Text = x.Firstname + " " + x.Lastname,
@@ -99,7 +122,7 @@ namespace CV_v2.Controllers
             }).ToList();
 
             ViewBag.Users = users;
-            return View(project); // Razor söker i /Views/Project/EditProjects.cshtml
+            return View(project);
         }
 
         // GET: Show details for a specific project
@@ -114,10 +137,10 @@ namespace CV_v2.Controllers
 
             if (project == null)
             {
-                return NotFound(); // Returnera 404 om projektet inte hittas
+                return NotFound();
             }
 
-            return View(project); // Razor söker i /Views/Project/Details.cshtml
+            return View(project);
         }
 
         // GET: Confirm project removal
@@ -125,7 +148,7 @@ namespace CV_v2.Controllers
         public IActionResult Remove(int projectID)
         {
             var project = _context.Projects.Find(projectID);
-            return View(project); // Razor söker i /Views/Project/Remove.cshtml
+            return View(project);
         }
 
         // POST: Handle project removal
@@ -134,7 +157,7 @@ namespace CV_v2.Controllers
         {
             _context.Projects.Remove(project);
             _context.SaveChanges();
-            return RedirectToAction("ShowProjects");  // Omdirigera tillbaka till ShowProjects efter borttagning
+            return RedirectToAction("ShowProjects");
         }
     }
 }

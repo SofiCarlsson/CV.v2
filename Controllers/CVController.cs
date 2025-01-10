@@ -171,8 +171,9 @@ namespace CV_v2.Controllers
         [HttpGet]
         public IActionResult AddWorkExperience()
         {
-            return View("AddWorkExperience");
+            return View(new WorkExperience()); // Skicka en instans av WorkExperience
         }
+
 
         [HttpGet]
         public IActionResult AddCompetence(int? id)
