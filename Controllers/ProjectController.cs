@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace CV_v2.Controllers
 {
     public class ProjectController : Controller
@@ -14,54 +13,19 @@ namespace CV_v2.Controllers
         {
             _context = context;
         }
+
+        // GET: Show all projects
         [HttpGet]
         public IActionResult ShowProjects()
         {
             var projects = _context.Projects.ToList();  // Hämtar alla projekt från databasen
-            return View("~/Views/ProjectView/ShowProjects.cshtml", projects);  // Skickar projekten till vyn
+            return View(projects);  // Razor söker nu automatiskt i /Views/Project/ShowProjects.cshtml
         }
 
-        [HttpPost]
-        public IActionResult ShowProjects(Project project)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Projects.Add(project);  // Lägg till projektet i databasen
-                _context.SaveChanges();  // Spara ändringarna i databasen
-                return RedirectToAction("ShowProjects");  // Omdirigera tillbaka till visningen av alla projekt
-            }
-
-            // Om modellen inte är giltig, skicka tillbaka till vyn
-            return View("~/Views/ProjectView/ShowProjects.cshtml", _context.Projects.ToList());
-        }
-
-        // GET: Projects
-        [HttpGet]
-        public IActionResult Index(string title)
-        {
-            Console.WriteLine("Index method reached");
-            Console.WriteLine("Title filter: " + title);
-
-            IQueryable<Project> projectList = from project in _context.Projects select project;
-
-            if (!string.IsNullOrEmpty(title))
-            {
-                projectList = projectList.Where(p => p.Title.ToLower().Contains(title.ToLower()));
-            }
-            else
-            {
-                Console.WriteLine("No filtering applied");
-            }
-
-            Console.WriteLine($"Number of projects found: {projectList.Count()}");
-            return View("~/Views/Home/Index.cshtml", projectList.ToList());
-        }
-
-        // GET: Project/Add
+        // GET: Show form to add a new project
         [HttpGet]
         public IActionResult Add()
         {
-            Project project = new Project();
             List<SelectListItem> users = _context.Users.Select(x => new SelectListItem
             {
                 Text = x.Firstname + " " + x.Lastname,
@@ -70,10 +34,11 @@ namespace CV_v2.Controllers
 
             users.Insert(0, new SelectListItem { Text = "Select a user", Value = "" });
             ViewBag.Users = users;
-            return View(project);
+
+            return View(); // Razor söker i /Views/Project/Add.cshtml
         }
 
-        // POST: Project/Add
+        // POST: Handle adding a new project
         [HttpPost]
         public IActionResult Add(Project project)
         {
@@ -81,39 +46,63 @@ namespace CV_v2.Controllers
             {
                 _context.Projects.Add(project);
                 _context.SaveChanges();
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("ShowProjects");  // Omdirigera till ShowProjects efter att projektet är skapat
             }
-            else
+
+            // Om modellen inte är giltig, ladda om formuläret med användare
+            List<SelectListItem> users = _context.Users.Select(x => new SelectListItem
             {
-                List<SelectListItem> users = _context.Users.Select(x => new SelectListItem
-                {
-                    Text = x.Firstname + " " + x.Lastname,
-                    Value = x.Id
-                }).ToList();
+                Text = x.Firstname + " " + x.Lastname,
+                Value = x.Id
+            }).ToList();
 
-                ViewBag.Users = users;
-                return View(project);
-            }
+            ViewBag.Users = users;
+            return View(project); // Razor söker i /Views/Project/Add.cshtml
         }
 
-        // GET: Project/Remove/5
+        // GET: Show form to edit an existing project
         [HttpGet]
-        public IActionResult Remove(int projectID)
+        public IActionResult EditProjects(int projectID)
         {
-            Project project = _context.Projects.Find(projectID);
-            return View(project);
+            var project = _context.Projects.Find(projectID);
+            if (project == null)
+            {
+                return NotFound(); // Returnera 404 om projektet inte hittas
+            }
+
+            List<SelectListItem> users = _context.Users.Select(x => new SelectListItem
+            {
+                Text = x.Firstname + " " + x.Lastname,
+                Value = x.Id
+            }).ToList();
+
+            ViewBag.Users = users;
+            return View(project); // Razor söker i /Views/Project/EditProjects.cshtml
         }
 
-        // POST: Project/Remove
+        // POST: Handle editing an existing project
         [HttpPost]
-        public IActionResult Remove(Project project)
+        public IActionResult EditProjects(Project project)
         {
-            _context.Projects.Remove(project);
-            _context.SaveChanges();
-            return RedirectToAction("Index", "Home");
+            if (ModelState.IsValid)
+            {
+                _context.Projects.Update(project);
+                _context.SaveChanges();
+                return RedirectToAction("ShowProjects");  // Omdirigera tillbaka till ShowProjects efter uppdatering
+            }
+
+            // Om modellen inte är giltig, ladda om formuläret med användare
+            List<SelectListItem> users = _context.Users.Select(x => new SelectListItem
+            {
+                Text = x.Firstname + " " + x.Lastname,
+                Value = x.Id
+            }).ToList();
+
+            ViewBag.Users = users;
+            return View(project); // Razor söker i /Views/Project/EditProjects.cshtml
         }
 
-        // GET: Project/Details/5
+        // GET: Show details for a specific project
         [HttpGet]
         public IActionResult Details(int projectID)
         {
@@ -125,10 +114,27 @@ namespace CV_v2.Controllers
 
             if (project == null)
             {
-                return NotFound();
+                return NotFound(); // Returnera 404 om projektet inte hittas
             }
 
-            return View(project);
+            return View(project); // Razor söker i /Views/Project/Details.cshtml
+        }
+
+        // GET: Confirm project removal
+        [HttpGet]
+        public IActionResult Remove(int projectID)
+        {
+            var project = _context.Projects.Find(projectID);
+            return View(project); // Razor söker i /Views/Project/Remove.cshtml
+        }
+
+        // POST: Handle project removal
+        [HttpPost]
+        public IActionResult Remove(Project project)
+        {
+            _context.Projects.Remove(project);
+            _context.SaveChanges();
+            return RedirectToAction("ShowProjects");  // Omdirigera tillbaka till ShowProjects efter borttagning
         }
     }
 }

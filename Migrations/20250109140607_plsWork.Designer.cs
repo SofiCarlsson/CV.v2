@@ -4,6 +4,7 @@ using CV_v2.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CV_v2.Migrations
 {
     [DbContext(typeof(UserContext))]
-    partial class UserContextModelSnapshot : ModelSnapshot
+    [Migration("20250109140607_plsWork")]
+    partial class plsWork
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -138,43 +141,6 @@ namespace CV_v2.Migrations
                     b.ToTable("Educations");
                 });
 
-            modelBuilder.Entity("CV_v2.Models.Message", b =>
-                {
-                    b.Property<int>("MessageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MessageId"));
-
-                    b.Property<string>("Anonym")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FranUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("SentTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("TillUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool?>("last")
-                        .HasColumnType("bit");
-
-                    b.HasKey("MessageId");
-
-                    b.HasIndex("FranUserId");
-
-                    b.HasIndex("TillUserId");
-
-                    b.ToTable("Messages");
-                });
-
             modelBuilder.Entity("CV_v2.Models.Project", b =>
                 {
                     b.Property<int>("ProjectID")
@@ -227,7 +193,6 @@ namespace CV_v2.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -532,24 +497,6 @@ namespace CV_v2.Migrations
                     b.Navigation("CV");
 
                     b.Navigation("WorkExperience");
-                });
-
-            modelBuilder.Entity("CV_v2.Models.Message", b =>
-                {
-                    b.HasOne("CV_v2.Models.User", "FranUser")
-                        .WithMany()
-                        .HasForeignKey("FranUserId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.HasOne("CV_v2.Models.User", "TillUser")
-                        .WithMany()
-                        .HasForeignKey("TillUserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("FranUser");
-
-                    b.Navigation("TillUser");
                 });
 
             modelBuilder.Entity("CV_v2.Models.Project", b =>

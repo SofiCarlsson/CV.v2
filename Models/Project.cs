@@ -2,19 +2,20 @@
 
 namespace CV_v2.Models
 {
-	public class Project
-	{
-		public int ProjectID { get; set; }
-		public string Title { get; set; }
-		public string Description { get; set; }
+    public class Project
+    {
+        public int ProjectID { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
 
-		// 1:M FK user  CreatedBy (referens till User)
-		public string CreatedBy { get; set; }
-		
-		[ForeignKey(nameof(CreatedBy))]
-		public virtual User User { get; set; }
+        // FK till User (den som skapade projektet)
+        public string CreatedBy { get; set; }
 
-		public virtual ICollection<UserInProject> UsersInProject { get; set; } = new List<UserInProject>();
+        // Relation till User (den som skapade projektet)
+        [ForeignKey(nameof(CreatedBy))]
+        public virtual User User { get; set; }
 
-	}
+        // Många-till-många-relation mellan User och Project via UserInProject
+        public virtual ICollection<UserInProject> UsersInProject { get; set; } = new List<UserInProject>();
+    }
 }

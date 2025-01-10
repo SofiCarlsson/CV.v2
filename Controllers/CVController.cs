@@ -1,5 +1,6 @@
 ﻿using CV_v2.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 
 namespace CV_v2.Controllers
@@ -13,19 +14,19 @@ namespace CV_v2.Controllers
             _context = context;
         }
 
-        ////Edit CV
-        //[HttpGet]
-        //public IActionResult Edit(string id)
-        //{
-        //   // var cv = _context.CVs.FirstOrDefault(c => c.UserId == id);  // Hitta CV baserat på UserId
-        //    if (cv == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return View(cv);
-        //}
+        // GET: Edit CV
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            var cv = _context.CVs.FirstOrDefault(c => c.CVId == id);
+            if (cv == null)
+            {
+                return NotFound();
+            }
+            return View(cv);
+        }
 
-        //Edit CV
+        // POST: Edit CV
         [HttpPost]
         public IActionResult Edit(CV updatedCV)
         {
@@ -38,8 +39,8 @@ namespace CV_v2.Controllers
             if (existingCV != null)
             {
                 existingCV.Competences = updatedCV.Competences;
-                existingCV.Education = updatedCV.Education;
-                existingCV.WorkExperience = updatedCV.WorkExperience;
+                existingCV.Educations = updatedCV.Educations;
+                existingCV.WorkExperiences = updatedCV.WorkExperiences;
 
                 _context.SaveChanges();
                 return RedirectToAction("Index", "Home");
@@ -48,54 +49,161 @@ namespace CV_v2.Controllers
             return View(updatedCV);
         }
 
-        //Create CV
+        // GET: Create CV
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult Create(string id)
         {
-            // Hämtar den inloggade användarens ID
-            string userId = User.Identity.Name;
-
-            // Om användaren inte är inloggad, kan du omdirigera till inloggningssidan
-            if (string.IsNullOrEmpty(userId))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
             var newCV = new CV
             {
-                //UserId = userId // Kopplar CV till rätt användare
+                UserId = id // Kopplar CV till rätt användare
             };
+            // Förbered alternativ för dropdown-menyer
+            ViewBag.CompetenceOptions = _context.Competences
+                .Select(c => new SelectListItem
+                {
+                    Value = c.CompetencesID.ToString(),
+                    Text = c.CompetenceName
+                })
+                .ToList();
+
+            ViewBag.EducationOptions = _context.Educations
+                .Select(e => new SelectListItem
+                {
+                    Value = e.EducationID.ToString(),
+                    Text = e.Degree + " - " + e.SchoolName
+                })
+                .ToList();
+
+            ViewBag.WorkExperienceOptions = _context.WorkExperiences
+                .Select(w => new SelectListItem
+                {
+                    Value = w.WorkExperienceID.ToString(),
+                    Text = w.WorkTitle
+                })
+                .ToList();
+
             return View(newCV);
         }
 
-        //Create CV
+        // POST: Create CV
         [HttpPost]
-        public IActionResult Create(CV newCV)
+        public IActionResult Create(CV newCV, List<int> selectedCompetences, List<int> selectedEducations, List<int> selectedWorkExperiences)
         {
-            // Kontrollera om modellen är giltig
-            //if (!User.Identity.)
-            //{
-            //    return View(newCV); // Om modellen inte är giltig, visa formuläret igen
-            //}
-
-            // Hämtar användarens ID igen om det inte finns i CV:t
-            string userId = User.Identity.Name;
-            if (string.IsNullOrEmpty(userId))
+            if (!ModelState.IsValid)
             {
-                return RedirectToAction("Login", "Account"); // Om användaren inte är inloggad, omdirigera till inloggningssidan
+                // Om valideringen misslyckas, ladda om dropdown-alternativen
+                ViewBag.CompetenceOptions = _context.Competences
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.CompetencesID.ToString(),
+                        Text = c.CompetenceName
+                    })
+                    .ToList();
+
+                ViewBag.EducationOptions = _context.Educations
+                    .Select(e => new SelectListItem
+                    {
+                        Value = e.EducationID.ToString(),
+                        Text = e.Degree + " - " + e.SchoolName
+                    })
+                    .ToList();
+
+                ViewBag.WorkExperienceOptions = _context.WorkExperiences
+                    .Select(w => new SelectListItem
+                    {
+                        Value = w.WorkExperienceID.ToString(),
+                        Text = w.WorkTitle
+                    })
+                    .ToList();
+
+                return View(newCV); // Skicka tillbaka formuläret om valideringen misslyckas
             }
 
-           /* newCV.UserId = userId;*/ // Säkerställ att rätt UserId är kopplat till CV:t
-
-            // Lägg till det nya CV:t i databasen
             _context.CVs.Add(newCV);
-            _context.SaveChanges(); // Spara ändringarna i databasen
+            _context.SaveChanges();
 
-            // Omdirigera till Edit-vyn för att visa det nyss skapade CV:t
-            return RedirectToAction("Edit", "CV", new { id = userId });
+            // Koppla valda kompetenser till CV:t
+            foreach (var competenceId in selectedCompetences)
+            {
+                var cvCompetence = new CvCompetences
+                {
+                    CVID = newCV.CVId,
+                    CompetencesID = competenceId
+                };
+                _context.CvCompetences.Add(cvCompetence);
+            }
 
+            // Koppla valda utbildningar till CV:t
+            foreach (var educationId in selectedEducations)
+            {
+                var cvEducation = new CvEducation
+                {
+                    CVID = newCV.CVId,
+                    EducationID = educationId
+                };
+                _context.CvEducations.Add(cvEducation);
+            }
+
+            // Koppla valda arbetserfarenheter till CV:t
+            foreach (var workExperienceId in selectedWorkExperiences)
+            {
+                var cvWorkExperience = new CvWorkExperience
+                {
+                    CVID = newCV.CVId,
+                    WorkExperienceID = workExperienceId
+                };
+                _context.CvWorkExperiences.Add(cvWorkExperience);
+            }
+
+            // Spara ändringar i databasen
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public IActionResult AddEducation()
+        {
+            return View(new Education()); // Skicka en tom Education-modell till vyn
         }
 
 
+        [HttpGet]
+        public IActionResult AddWorkExperience()
+        {
+            return View("AddWorkExperience");
+        }
+
+        [HttpGet]
+        public IActionResult AddCompetence(int? id)
+        {
+            if (id == null) // Skapa ny kompetens
+            {
+                return View(new Competences());
+            }
+
+            var competence = _context.Competences.Find(id);
+            if (competence == null)
+            {
+                return NotFound();
+            }
+
+            return View(competence);
+        }
+
+        [HttpPost]
+        public IActionResult AddCompetence(Competences competence)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return View(competence);
+            }
+
+            Console.WriteLine("ModelState is valid. Attempting to save...");
+            _context.Competences.Add(competence);
+            _context.SaveChanges();
+            return RedirectToAction("Create", "CV");
+        }
     }
 }

@@ -8,16 +8,20 @@ namespace CV_v2.Models
 	{
         [Key]
 		public int CVId { get; set; }
+        public string Description { get; set; }
 
         //Navigering till User.
         public virtual User User { get; set; }
         // Lägg till UserId för att koppla CV till en användare
-        //public string UserId { get; set; }  // Detta ska vara samma typ som User.Id
-        public string? Competences { get; set; }
-		public string? Education { get; set; }
-		public string? WorkExperience { get; set; }
+        public string UserId { get; set; }  // Detta ska vara samma typ som User.Id
+        [NotMapped]
+        public IFormFile? BildFil { get; set; }
 
-        
+        public virtual ICollection<CvWorkExperience>? WorkExperiences { get; set; }
+        public virtual ICollection<CvEducation>? Educations { get; set; }
+        public virtual ICollection<CvCompetences>? Competences { get; set; }
+
+
 
     }
 }

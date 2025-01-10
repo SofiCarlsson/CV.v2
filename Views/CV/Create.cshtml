@@ -3,22 +3,24 @@
 <h2>Skapa CV</h2>
 
 <form asp-action="Create" asp-controller="CV" method="post">
-    <div>
-        <label>Kompetenser:</label>
-        <input asp-for="Competences" class="form-control" />
+    <input type="hidden" asp-for="UserId" />
+
+    <div id="competences-section">
+            <label>Kompetenser:</label>
+        <div class="competence-row">
+            <select asp-items="@ViewBag.CompetenceOptions" asp-for="Competences" multiple></select>
+            <a asp-controller="CV" asp-action="AddCompetence" class="btn btn-primary">Lägg till ny kompetens</a>
+        </div>
     </div>
-    <div>
+    <div id ="education-section">
         <label>Utbildning:</label>
-        <input asp-for="Education" class="form-control" />
+        <select asp-items="@ViewBag.EducationOptions" asp-for="Educations" multiple></select>
+        <a asp-controller="CV" asp-action="AddEducation" class="btn btn-primary">Lägg till ny utbildning</a>
     </div>
-    <div>
+    <div id ="workExperience-section">
         <label>Arbetserfarenhet:</label>
-        <input asp-for="WorkExperience" class="form-control" />
+        <select asp-items="@ViewBag.WorkExperienceOptions" asp-for="WorkExperiences" multiple></select>
+        <a asp-controller="CV" asp-action="AddWorkExperience" class="btn btn-primary">Lägg till ny arbetserfarenhet</a>
     </div>
     <button type="submit" class="btn btn-primary mt-3">Skapa CV</button>
 </form>
-
-<div>
-    <a asp-controller="CV" asp-action="Edit" asp-route-id="@User.Identity.Name" class="btn">Edit CV</a>
-</div>
-

@@ -22,6 +22,11 @@ namespace CV_v2.Models
 
         [Required(ErrorMessage = "Vänligen skriv ett efternamn.")]
         public string Lastname { get; set; }
-        
+
+        [Required(ErrorMessage = "Vänligen skriv en adress.")]
+        public string Address { get; set; }
+        [Required(ErrorMessage = "Vänligen skriv en email.")]
+        public string Email { get; set; }
+
     }
 }
