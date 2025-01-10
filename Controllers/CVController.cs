@@ -198,6 +198,11 @@ namespace CV_v2.Controllers
 
             if (!ModelState.IsValid)
             {
+                // Logga alla fel i ModelState
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine($"Validation error: {error.ErrorMessage}");
+                }
                 return View(competence);
             }
 
