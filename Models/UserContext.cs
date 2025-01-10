@@ -44,6 +44,7 @@ namespace CV_v2.Models
                 .HasOne(p => p.User)
                 .WithMany()  // Om en User kan ha flera projekt (1:N relation)
                 .HasForeignKey(p => p.CreatedBy)
+                .HasPrincipalKey(u => u.Id) // Antar att User har en "Id"-egenskap
                 .OnDelete(DeleteBehavior.Restrict);  // Ange önskat beteende vid borttagning av användare
 
             // Många-till-många relation mellan User och Project via UserInProject

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CV_v2.Migrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20250110141944_meduseriusercontext")]
-    partial class meduseriusercontext
+    [Migration("20250110192410_initial-migration")]
+    partial class initialmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

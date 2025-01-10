@@ -10,7 +10,7 @@ namespace CV_v2.Models
 
         // FK till User (den som skapade projektet)
         public string CreatedBy { get; set; }
-
+            
         // Relation till User (den som skapade projektet)
         [ForeignKey(nameof(CreatedBy))]
         public virtual User User { get; set; }
