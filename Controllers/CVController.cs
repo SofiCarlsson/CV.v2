@@ -164,8 +164,9 @@ namespace CV_v2.Controllers
         [HttpGet]
         public IActionResult AddEducation()
         {
-            return View("AddEducation");
+            return View(new Education()); // Skicka en tom Education-modell till vyn
         }
+
 
         [HttpGet]
         public IActionResult AddWorkExperience()

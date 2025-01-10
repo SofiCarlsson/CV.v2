@@ -1,10 +1,8 @@
 ﻿@model Competences
 
-
 <h2>@(Model.CompetencesID == 0 ? "Skapa ny kompetens" : "Redigera kompetens")</h2>
 
 <form asp-action="AddCompetence" asp-controller="CV" method="post">
-
     <div class="form-group">
         <label for="CompetenceName">Namn på kompetens:</label>
         <input asp-for="CompetenceName" class="form-control" />

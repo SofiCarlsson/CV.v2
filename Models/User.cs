@@ -15,6 +15,7 @@ namespace CV_v2.Models
         public string Address { get; set; } // Lägg till en enkel adress
 
         public bool IsProfilePrivate { get; set; }
+        public string Email { get; set; }
 
         public int? CVID { get; set; }
 
