@@ -193,13 +193,16 @@ namespace CV_v2.Controllers
         [HttpPost]
         public IActionResult AddCompetence(Competences competence)
         {
-            if (ModelState.IsValid)
+
+            if (!ModelState.IsValid)
             {
-                _context.Competences.Add(competence);
-                _context.SaveChanges();
-                return RedirectToAction("Create", "CV");
+                return View(competence);
             }
-            return View(competence);
+
+            Console.WriteLine("ModelState is valid. Attempting to save...");
+            _context.Competences.Add(competence);
+            _context.SaveChanges();
+            return RedirectToAction("Create", "CV");
         }
     }
 }
