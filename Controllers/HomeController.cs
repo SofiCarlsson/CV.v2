@@ -26,6 +26,16 @@ namespace CV_v2.Controllers
             return View(usersList);
         }
 
+        public async Task<IActionResult> Shared()
+        {
+            // Ladda användare och deras tillhörande CV
+            var usersList = await users.Users
+                .Include(u => u.CV) // Inkludera relaterade CV-objekt
+                .ToListAsync();
+
+            return View(usersList);
+        }
+
         public IActionResult Privacy()
         {
             return View();

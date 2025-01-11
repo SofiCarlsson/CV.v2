@@ -23,7 +23,11 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Hem</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="CV" asp-action="Create">CV</a>  <!-- Ny flik för CV -->
+                            @if (!User.Identity.IsAuthenticated)
+                            {
+                                    <!-- Om användaren inte är inlgogad, visa skapa-knappen -->
+                                <a class="nav-link text-dark" asp-controller="CV" asp-action="Create">CV</a>
+                                }
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Project" asp-action="ShowProjects">Projekt</a>
