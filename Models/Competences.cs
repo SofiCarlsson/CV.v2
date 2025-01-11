@@ -7,7 +7,7 @@ namespace CV_v2.Models
         public int CompetencesID { get; set; }
         public string CompetenceName { get; set; }
 
-        public virtual ICollection<CvCompetences> CvCompetences { get; set; }
+        public virtual ICollection<CvCompetences> CvCompetences { get; set; } = new List<CvCompetences>();
 
 
     }

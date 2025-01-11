@@ -3,7 +3,7 @@
 
 <h2>@(Model.WorkExperienceID == 0 ? "Skapa ny arbeterfarenhet" : "Redigera arbet")</h2>
 
-<form asp-action="AddEducation" asp-controller="CV" method="post">
+<form asp-action="AddWorkExperience" asp-controller="CV" method="post">
     <div class="form-group">
         <label for="WorkTitle">Namn på jobtitel:</label>
         <input asp-for="WorkTitle" class="form-control" />
@@ -18,13 +18,13 @@
 
     <div class="form-group">
         <label for="WorkStartDate">Startdatum:</label>
-        <input asp-for="WorkStartDate" class="form-control" />
+        <input asp-for="WorkStartDate" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
         <span asp-validation-for="WorkStartDate" class="text-danger"></span>
     </div>
 
     <div class="form-group">
         <label for="WorkEndDate">Slutdatum:</label>
-        <input asp-for="WorkEndDate" class="form-control" />
+        <input asp-for="WorkEndDate" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
         <span asp-validation-for="WorkEndDate" class="text-danger"></span>
     </div>
 

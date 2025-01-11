@@ -17,13 +17,13 @@
 
     <div class="form-group">
         <label for="EducationStartDate">Startdatum:</label>
-        <input asp-for="EducationStartDate" class="form-control" />
+        <input asp-for="EducationStartDate" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
         <span asp-validation-for="EducationStartDate" class="text-danger"></span>
     </div>
 
     <div class="form-group">
         <label for="EducationEndDate">Slutdatum:</label>
-        <input asp-for="EducationEndDate" class="form-control" />
+        <input asp-for="EducationEndDate" type="date" class="form-control" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
         <span asp-validation-for="EducationEndDate" class="text-danger"></span>
     </div>
 

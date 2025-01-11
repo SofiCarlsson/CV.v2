@@ -1,7 +1,14 @@
 ﻿using CV_v2.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Diagnostics;
 using System.Linq;
+using System.Security.Claims;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CV_v2.Controllers
 {
@@ -15,6 +22,7 @@ namespace CV_v2.Controllers
         }
 
         // GET: Edit CV
+        [Authorize]
         [HttpGet]
         public IActionResult Edit(int id)
         {
@@ -50,13 +58,12 @@ namespace CV_v2.Controllers
         }
 
         // GET: Create CV
+        [Authorize]
         [HttpGet]
-        public IActionResult Create(string id)
+        public IActionResult Create()
         {
-            var newCV = new CV
-            {
-                UserId = id // Kopplar CV till rätt användare
-            };
+            var newCV = new CV{};
+
             // Förbered alternativ för dropdown-menyer
             ViewBag.CompetenceOptions = _context.Competences
                 .Select(c => new SelectListItem
@@ -87,10 +94,27 @@ namespace CV_v2.Controllers
 
         // POST: Create CV
         [HttpPost]
-        public IActionResult Create(CV newCV, List<int> selectedCompetences, List<int> selectedEducations, List<int> selectedWorkExperiences)
+        public async Task<IActionResult> Create(CV newCV, List<int> Competences, List<int> Educations, List<int> WorkExperiences)
         {
+           
+            //Hämtar id från den inloggade användaren
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            //Rensar modelstate annars blir den arg
+            ModelState.Remove("User");
+            ModelState.Remove("UserId");
+
+            //Sätter UserID i CV till den inloggade användaren
+            newCV.UserId = userId;
+            newCV.User = user;
+
             if (!ModelState.IsValid)
             {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine("Valideringsfel: " + error.ErrorMessage);
+                }
                 // Om valideringen misslyckas, ladda om dropdown-alternativen
                 ViewBag.CompetenceOptions = _context.Competences
                     .Select(c => new SelectListItem
@@ -118,45 +142,46 @@ namespace CV_v2.Controllers
 
                 return View(newCV); // Skicka tillbaka formuläret om valideringen misslyckas
             }
-
+            
             _context.CVs.Add(newCV);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
+
 
             // Koppla valda kompetenser till CV:t
-            foreach (var competenceId in selectedCompetences)
+            foreach (var competence in Competences)
             {
                 var cvCompetence = new CvCompetences
                 {
                     CVID = newCV.CVId,
-                    CompetencesID = competenceId
+                    CompetencesID = competence
                 };
                 _context.CvCompetences.Add(cvCompetence);
             }
 
             // Koppla valda utbildningar till CV:t
-            foreach (var educationId in selectedEducations)
+            foreach (var educations in Educations)
             {
                 var cvEducation = new CvEducation
                 {
                     CVID = newCV.CVId,
-                    EducationID = educationId
+                    EducationID = educations
                 };
                 _context.CvEducations.Add(cvEducation);
             }
 
             // Koppla valda arbetserfarenheter till CV:t
-            foreach (var workExperienceId in selectedWorkExperiences)
+            foreach (var workExperiences in WorkExperiences)
             {
                 var cvWorkExperience = new CvWorkExperience
                 {
                     CVID = newCV.CVId,
-                    WorkExperienceID = workExperienceId
+                    WorkExperienceID = workExperiences
                 };
                 _context.CvWorkExperiences.Add(cvWorkExperience);
             }
 
             // Spara ändringar i databasen
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return RedirectToAction("Index", "Home");
         }
@@ -167,6 +192,19 @@ namespace CV_v2.Controllers
             return View(new Education()); // Skicka en tom Education-modell till vyn
         }
 
+        [HttpPost]
+        public IActionResult AddEducation(Education education)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return View(education);
+            }
+            _context.Educations.Add(education);
+            _context.SaveChanges();
+            return RedirectToAction("Create", "CV");
+        }
+
 
         [HttpGet]
         public IActionResult AddWorkExperience()
@@ -174,22 +212,25 @@ namespace CV_v2.Controllers
             return View(new WorkExperience()); // Skicka en instans av WorkExperience
         }
 
+        [HttpPost]
+        public IActionResult AddWorkExperience(WorkExperience workExperience)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return View(workExperience);
+            }
+            _context.WorkExperiences.Add(workExperience);
+            _context.SaveChanges();
+            return RedirectToAction("Create", "CV");
+        }
+
 
         [HttpGet]
-        public IActionResult AddCompetence(int? id)
+        public IActionResult AddCompetence()
+
         {
-            if (id == null) // Skapa ny kompetens
-            {
-                return View(new Competences());
-            }
-
-            var competence = _context.Competences.Find(id);
-            if (competence == null)
-            {
-                return NotFound();
-            }
-
-            return View(competence);
+            return View(new Competences()); // Skicka en instans av Competences
         }
 
         [HttpPost]
@@ -198,15 +239,8 @@ namespace CV_v2.Controllers
 
             if (!ModelState.IsValid)
             {
-                // Logga alla fel i ModelState
-                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    Console.WriteLine($"Validation error: {error.ErrorMessage}");
-                }
                 return View(competence);
             }
-
-            Console.WriteLine("ModelState is valid. Attempting to save...");
             _context.Competences.Add(competence);
             _context.SaveChanges();
             return RedirectToAction("Create", "CV");
