@@ -24,33 +24,50 @@ body {
 .grid-container {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Två kolumner av lika storlek */
-    grid-template-rows: auto; /* Anpassa höjden dynamiskt */
-    gap: 10px; /* Mellanrum mellan cellerna */
+    grid-template-rows: auto auto auto auto auto;
+    gap: 20px;
 }
 
 .item-1 {
     grid-column: 1 / span 2; /* Sträcker sig över båda kolumnerna */
+    grid-row: 1;
 }
 
 .item-2-1 {
-    grid-column: 1; /* Första kolumnen */
+    grid-column: 1;
+    grid-row: 2;
+    text-align: center;
 }
 
 .item-2-2 {
-    grid-column: 2; /* Andra kolumnen */
+    grid-column: 2;
+    grid-row: 2;
 }
 
 .item-3-1 {
-    grid-column: 1; /* Första kolumnen */
+    grid-column: 1;
+    grid-row: 3;
 }
 
 .item-3-2 {
-    grid-column: 2; /* Andra kolumnen */
+    grid-column: 2;
+    grid-row: 3;
 }
 
 .item-4, .item-5 {
     grid-column: 1 / span 2; /* Sträck ut över båda kolumnerna */
-    justify-self: center; /* Centrerar horisontellt */
-    align-self: center; /* Centrerar vertikalt */
     text-align: center; /* Centrerar texten inuti blocket */
+}
+
+.profile-pic {
+    width: 300px;
+    height: 300px;  
+    object-fit: cover; /* Behåller proportioner */
+    border-radius: 10%; /* Gör bilden rund */
+}
+
+.item-1, .item-2-1, .item-2-2, .item-3-1, .item-3-2, .item-4, .item-5 {
+    background-color: #ebecec;
+    border-radius: 1rem;
+    padding: 1rem;
 }
