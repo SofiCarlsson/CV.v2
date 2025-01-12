@@ -48,3 +48,9 @@ else if (TempData["ErrorMessage"] != null)
     </div>
     <button type="submit" class="btn btn-primary">Uppdatera</button>
 </form>
+
+<form asp-action="UploadImage" method="post" enctype="multipart/form-data">
+    <label for="PictureFile">Välj en bild:</label>
+    <input type="file" name="Cv.PictureFile" id="PictureFile" />
+    <button type="submit">Ladda upp</button>
+</form>

@@ -14,50 +14,44 @@ public class ProfileController : Controller
     }
 
     // Visa profil
+    [Authorize]
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var user = await _context.Users
-            .Include(u => u.CV)  // Om du har en relation till CV
-            .FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
-
-        if (user == null)
-        {
-            return NotFound();
-        }
+        var username = User.Identity.Name;
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+        var userId = user.Id;
+        var cv = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == userId);
 
         var model = new EditProfileViewModel
         {
             Firstname = user.Firstname,
             Lastname = user.Lastname,
             Email = user.Email,
-            CVId = user.CV?.CVId ?? 0
+            Cv = cv
         };
 
         return View(model);
     }
 
     // Redigera profil
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> Edit()
     {
-        var user = await _context.Users
-            .Include(u => u.CV)  // Om du har en relation till CV
-            .FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
-
-        if (user == null)
-        {
-            return NotFound();
-        }
+        var username = User.Identity.Name;
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+        var userId = user.Id;
+        var cv = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == userId);
 
         var model = new EditProfileViewModel
         {
             Firstname = user.Firstname,
             Lastname = user.Lastname,
             Email = user.Email,
-            CVId = user.CV?.CVId ?? 0
+            Cv = cv
         };
 
-        ViewBag.CVOptions = new List<string> {"CV1", "CV2", "CV3"};
 
         return View(model);
     }
@@ -83,9 +77,9 @@ public class ProfileController : Controller
             user.Email = model.Email;
 
             // Om användaren har ett CV, uppdatera det
-            if (model.CVId != 0)
+            if (model.Cv.CVId != 0)
             {
-                user.CV = await _context.CVs.FirstOrDefaultAsync(c => c.CVId == model.CVId);
+                user.CV = await _context.CVs.FirstOrDefaultAsync(c => c.CVId == model.Cv.CVId);
             }
 
             await _context.SaveChangesAsync();
@@ -104,10 +98,8 @@ public class ProfileController : Controller
     {
         var username = User.Identity.Name;
         var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
-        Console.WriteLine("Användare: " + user);
         var userId = user.Id;
         var cv = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == userId);
-        Console.WriteLine("CV: " + cv);
 
         var profileViewModel = new ProfileViewModel
         {
@@ -120,6 +112,38 @@ public class ProfileController : Controller
         };
 
         return View(profileViewModel);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UploadImage(EditProfileViewModel model)
+    {
+
+        if (model.Cv != null && model.Cv.PictureFile.Length > 0)
+        {
+            //Hämta CV
+            var username = User.Identity.Name;
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            var userId = user.Id;
+            var cv = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == userId);
+
+            // Spara sökvägen och bilden
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", model.Cv.PictureFile.FileName);
+            var newPicturePath = Path.Combine("images", model.Cv.PictureFile.FileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                // Spara filen till den angivna platsen
+                await model.Cv.PictureFile.CopyToAsync(stream);
+            }
+
+            cv.PicturePath = newPicturePath;
+            
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("CVSite");
+        }
+
+        return View(model);
     }
 
 }
