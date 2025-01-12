@@ -1,0 +1,40 @@
+﻿@model ProfileViewModel
+
+<div class="grid-container">
+
+    <div class="item item-1">
+        <div class="p-5 mb-4" style="background-color: #BADEEC; border-radius: .5rem;">
+            <div class="container text-center">
+                <h2 class="display-4 text-decoration-underline">Hanna Nilsson</h2>
+                <h4 class="lead">@@ @User.Identity.Name</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="item item-2-1">
+        <p>Här ska en profilbild finnas</p>
+    </div>
+
+	<div class="item item-2-2">
+		<table class="table">
+			<thead>
+			<td>Komptenser</td>
+			</thead>
+			<tbody>
+
+				@foreach (var competence in Model.CV.Competences)
+				{
+					<tr>
+						<td>@competence.Competences.CompetenceName</td>
+					</tr>
+				}
+	</div>
+
+    <div class="item item-3-1">3-1</div>
+
+    <div class="item item-3-2">3-2</div>
+
+    <div class="item item-4">4</div>
+
+    <div class="item item-5">5</div>
+</div>

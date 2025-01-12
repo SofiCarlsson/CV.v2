@@ -2,12 +2,13 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using CV_v2.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
-public class ProfilController : Controller
+public class ProfileController : Controller
 {
     private readonly UserContext _context;
 
-    public ProfilController(UserContext context)
+    public ProfileController(UserContext context)
     {
         _context = context;
     }
@@ -96,4 +97,29 @@ public class ProfilController : Controller
 
         return View(model);
     }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> CVSite()
+    {
+        var username = User.Identity.Name;
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+        Console.WriteLine("Användare: " + user);
+        var userId = user.Id;
+        var cv = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == userId);
+        Console.WriteLine("CV: " + cv);
+
+        var profileViewModel = new ProfileViewModel
+        {
+            User = user,
+            CV = cv,
+            Competences = cv.Competences.ToList(),
+            Educations = cv.Educations.ToList(),
+            WorkExperiences = cv.WorkExperiences.ToList(),
+            MyProjects = user.UserInProjects.ToList()
+        };
+
+        return View(profileViewModel);
+    }
+
 }
