@@ -9,11 +9,6 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<UserContext>(options =>
 	options.UseLazyLoadingProxies().UseSqlServer(builder.Configuration.GetConnectionString("UserContext")));
 builder.Services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<UserContext>().AddDefaultTokenProviders();
-//builder.Services.ConfigureApplicationCookie(options =>
-//{
-//    options.LoginPath = "/Account/Login";  // Försäkra dig om att denna väg är korrekt
-//    options.SlidingExpiration = true;  // Justera efter behov
-//});
 
 var app = builder.Build();
 

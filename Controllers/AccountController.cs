@@ -31,7 +31,8 @@ namespace CV_v2.Controllers
                     Firstname = registerViewModel.Firstname,
                     Lastname = registerViewModel.Lastname,
                     Address = registerViewModel.Address,
-                    Email = registerViewModel.Email
+                    Email = registerViewModel.Email,
+                    IsProfilePrivate = registerViewModel.IsProfilePrivate
                 };
 
                 var result =

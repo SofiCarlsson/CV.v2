@@ -14,6 +14,7 @@
             <th>Beskrivning</th>
             <th>Deltagare</th>
             <th>Skapat av</th>
+            <th>Hantera projekt</th>
            
         </tr>
     </thead>
@@ -23,6 +24,12 @@
             <tr>
                 <td>@project.Title</td>
                 <td>@project.Description</td>
+                <td>
+                    @foreach (var user in project.UsersInProject.OrderBy(u => u.User.Lastname).ThenBy(u => u.User.Firstname))
+                    {
+                        <span>@user.User.Firstname @user.User.Lastname<br /></span>
+                    }
+                </td>
                 <td>@project.User?.Firstname @project.User?.Lastname</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@project.ProjectID" class="btn btn-warning btn-sm">Edit</a>

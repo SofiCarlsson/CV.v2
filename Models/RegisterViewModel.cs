@@ -27,6 +27,7 @@ namespace CV_v2.Models
         public string Address { get; set; }
         [Required(ErrorMessage = "Vänligen skriv en email.")]
         public string Email { get; set; }
+        public bool IsProfilePrivate { get; set; }
 
     }
 }

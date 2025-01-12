@@ -32,7 +32,7 @@ namespace CV_v2.Controllers
                 Value = x.Id
             }).ToList();
 
-            users.Insert(0, new SelectListItem { Text = "Select a user", Value = "" });
+            users.Insert(0, new SelectListItem { Text = "Välj en användare", Value = "" });
             ViewBag.Users = users;
 
             return View();
@@ -42,6 +42,10 @@ namespace CV_v2.Controllers
         [HttpPost]
         public IActionResult Add(Project project)
         {
+            ModelState.Remove("User");
+            var user = _context.Users.Find(project.CreatedBy);
+            project.User = user;
+
             if (ModelState.IsValid)
             {
                 if (string.IsNullOrEmpty(project.CreatedBy))
@@ -56,12 +60,6 @@ namespace CV_v2.Controllers
                     return View(project);
                 }
 
-                var user = _context.Users.Find(project.CreatedBy);
-                if (user != null)
-                {
-                    project.User = user;
-                }
-
                 _context.Projects.Add(project);
                 _context.SaveChanges();
 
@@ -73,6 +71,13 @@ namespace CV_v2.Controllers
 
                 _context.SaveChanges();
                 return RedirectToAction("ShowProjects");
+            }
+            else
+            {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine("Valideringsfel: " + error.ErrorMessage);
+                }
             }
 
             List<SelectListItem> users = _context.Users.Select(x => new SelectListItem
