@@ -1,6 +1,7 @@
 using CV_v2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
 
 namespace CV_v2.Controllers
@@ -8,33 +9,29 @@ namespace CV_v2.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly UserContext users;
+        private readonly UserContext _context;
 
         public HomeController(ILogger<HomeController> logger, UserContext service)
         {
             _logger = logger;
-            users = service;
+            _context = service;
         }
 
         public async Task<IActionResult> Index()
         {
-            // Ladda användare och deras tillhörande CV
-            var usersList = await users.Users
-                .Include(u => u.CV) // Inkludera relaterade CV-objekt
-                .ToListAsync();
-
-            return View(usersList);
+            var projects = _context.Projects.ToList();
+            return View(projects);
         }
 
-        public async Task<IActionResult> Shared()
-        {
-            // Ladda användare och deras tillhörande CV
-            var usersList = await users.Users
-                .Include(u => u.CV) // Inkludera relaterade CV-objekt
-                .ToListAsync();
+        //public async Task<IActionResult> Shared()
+        //{
+        //    // Ladda användare och deras tillhörande CV
+        //    var usersList = await users.Users
+        //        .Include(u => u.CV) // Inkludera relaterade CV-objekt
+        //        .ToListAsync();
 
-            return View(usersList);
-        }
+        //    return View(usersList);
+        //}
 
         public IActionResult Privacy()
         {

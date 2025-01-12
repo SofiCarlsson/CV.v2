@@ -25,12 +25,15 @@
                         <li class="nav-item">
                             @if (!User.Identity.IsAuthenticated)
                             {
-                                    <!-- Om användaren inte är inlgogad, visa skapa-knappen -->
+                                    <!-- Om användaren inte är inloggad, visa skapa-knappen -->
                                 <a class="nav-link text-dark" asp-controller="CV" asp-action="Create">CV</a>
-                                }
+                            }
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Project" asp-action="ShowProjects">Projekt</a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="User" asp-action="ShowUsers" class="btn">Användare</a>
                         </li>
                         <li class="nav-item">
 							<a class="nav-link text-dark" asp-controller="Profile" asp-action="CVSite">Din profil</a>

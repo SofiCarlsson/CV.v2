@@ -2,18 +2,19 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace CV_v2.Controllers
 {
-	public class UserController : Controller
-	{
-		UserContext users;
+    public class UserController : Controller
+    {
+        UserContext users;
 
 
         public UserController(UserContext service)
-		{
-			users = service;
-		}
+        {
+            users = service;
+        }
 
         [HttpGet]
         public IActionResult Index(string id)
@@ -38,19 +39,19 @@ namespace CV_v2.Controllers
         }
 
         [HttpGet]
-		public IActionResult Add()
-		{
-			User user = new User();
+        public IActionResult Add()
+        {
+            User user = new User();
             List<SelectListItem> cvs = users.CVs.Select(x => new SelectListItem
             { Text = x.CVId.ToString(), Value = x.CVId.ToString() }).ToList();
             cvs.Insert(0, new SelectListItem { Text = "Inget CV", Value = "" });
             ViewBag.options = cvs;
             return View(user);
-		}
+        }
 
-		[HttpPost]
-		public IActionResult Add(User user)
-		{
+        [HttpPost]
+        public IActionResult Add(User user)
+        {
             if (ModelState.IsValid)
             {
                 users.Add(user);
@@ -67,6 +68,17 @@ namespace CV_v2.Controllers
         }
 
         [Authorize]
+        [HttpGet]
+        public async Task<ActionResult> ShowUsers()
+        {
+            // Ladda användare och deras tillhörande CV
+            var usersList = await users.Users
+                .Include(u => u.CV) // Inkludera relaterade CV-objekt
+                .ToListAsync();
+
+            return View(usersList);
+        }
+       
         [HttpGet]
         public ActionResult Test()
         {

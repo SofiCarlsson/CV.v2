@@ -114,6 +114,27 @@ public class ProfileController : Controller
         return View(profileViewModel);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> CVSite(string username)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+        var userId = user.Id;
+        var cv = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == userId);
+
+        var profileViewModel = new ProfileViewModel
+        {
+            User = user,
+            CV = cv,
+            Competences = cv.Competences.ToList(),
+            Educations = cv.Educations.ToList(),
+            WorkExperiences = cv.WorkExperiences.ToList(),
+            MyProjects = user.UserInProjects.ToList()
+        };
+
+        return View(profileViewModel);
+    }
+
+
     [HttpPost]
     public async Task<IActionResult> UploadImage(EditProfileViewModel model)
     {
