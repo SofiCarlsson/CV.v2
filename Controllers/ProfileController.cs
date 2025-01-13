@@ -94,14 +94,16 @@ namespace CV_v2.Controllers
                     {
                         foreach (var error in result.Errors)
                         {
-                            ModelState.AddModelError("", error.Description);
+                            // Lägg till varje felmeddelande till ModelState
+                            ModelState.AddModelError("OldPassword", error.Description);
                         }
                         return View(model);
                     }
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Lösenordet kunde inte uppdateras. Kontrollera att det gamla lösenordet är korrekt och att det nya lösenordet och bekräftelsen matchar.");
+                    // Om lösenorden inte matchar
+                    ModelState.AddModelError("NewPassword", "Lösenorden matchar inte eller är inte korrekt ifyllda.");
                     return View(model);
                 }
 
@@ -113,6 +115,7 @@ namespace CV_v2.Controllers
 
             return View(model);
         }
+
 
 
         [HttpPost]

@@ -35,14 +35,44 @@ else if (TempData["ErrorMessage"] != null)
     <div class="form-group">
         <label for="OldPassword">Gamla lösenordet</label>
         <input type="password" class="form-control" id="OldPassword" name="OldPassword" />
+        <!-- Visa felmeddelande för gamla lösenordet om det finns -->
+        @if (ViewData.ModelState["OldPassword"]?.Errors.Any() == true)
+        {
+            <div class="text-danger">
+                @foreach (var error in ViewData.ModelState["OldPassword"].Errors)
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
+        }
     </div>
     <div class="form-group">
         <label for="NewPassword">Nytt lösenord</label>
         <input type="password" class="form-control" id="NewPassword" name="NewPassword" />
+        <!-- Visa felmeddelande för nya lösenordet om det finns -->
+        @if (ViewData.ModelState["NewPassword"]?.Errors.Any() == true)
+        {
+            <div class="text-danger">
+                @foreach (var error in ViewData.ModelState["NewPassword"].Errors)
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
+        }
     </div>
     <div class="form-group">
         <label for="ConfirmNewPassword">Bekräfta nytt lösenord</label>
         <input type="password" class="form-control" id="ConfirmNewPassword" name="ConfirmNewPassword" />
+        <!-- Visa felmeddelande för bekräftat nytt lösenord om det finns -->
+        @if (ViewData.ModelState["ConfirmNewPassword"]?.Errors.Any() == true)
+        {
+            <div class="text-danger">
+                @foreach (var error in ViewData.ModelState["ConfirmNewPassword"].Errors)
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
+        }
     </div>
     <button type="submit" class="btn btn-primary">Spara ändringar</button>
 </form>
