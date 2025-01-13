@@ -17,37 +17,22 @@ namespace CV_v2.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(string id)
+        public IActionResult Index(string firstNameFilter)
         {
-            Console.WriteLine("Index method reached");
-            Console.WriteLine("Id parameter: " + id);
-
             IQueryable<User> userList = from user in users.Users select user;
 
-            if (!string.IsNullOrEmpty(id))
+            // Om firstNameFilter inte är tomt, filtrera användarna baserat på förnamn
+            if (!string.IsNullOrEmpty(firstNameFilter))
             {
-                userList = userList.Where(user => user.Firstname.ToLower().Contains(id.ToLower()));
+                userList = userList.Where(user => user.Firstname.ToLower().Contains(firstNameFilter.ToLower()));
             }
 
-            else
-            {
-                Console.WriteLine("No filtering applied");
-            }
-
-            Console.WriteLine($"Number of users found: {userList.Count()}");
-            return View("~/Views/Home/Index.cshtml", userList.ToList());
+            // Skicka användarlistan till vyn
+            ViewData["FirstNameFilter"] = firstNameFilter;
+            return View("ShowUsers", userList.ToList());  // Returnera ShowUser-vyn istället för Index
         }
 
-        [HttpGet]
-        public IActionResult Add()
-        {
-            User user = new User();
-            List<SelectListItem> cvs = users.CVs.Select(x => new SelectListItem
-            { Text = x.CVId.ToString(), Value = x.CVId.ToString() }).ToList();
-            cvs.Insert(0, new SelectListItem { Text = "Inget CV", Value = "" });
-            ViewBag.options = cvs;
-            return View(user);
-        }
+
 
         [HttpPost]
         public IActionResult Add(User user)
