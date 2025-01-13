@@ -218,9 +218,18 @@ namespace Projekt_CV_Site.Controllers
         public async Task<IActionResult> ShowMessages()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await userContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
-  
-            return View();
+            var user = await userContext.Users.FirstOrDefaultAsync(u => u.Id == userId);   
+            
+            var messages = await userContext.Messages
+        .Include(m => m.FranUser) // Laddar avsändarens användarinformation
+        .Include(m => m.TillUser) // Laddar mottagarens användarinformation
+        .Where(m => m.TillUserId == userId || m.FranUserId == userId)
+        .ToListAsync();
+
+
+            messages = new List<Message>();
+
+            return View(messages);
         }
 
         [HttpPost]
