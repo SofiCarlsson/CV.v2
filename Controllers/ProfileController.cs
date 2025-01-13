@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CV_v2.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace CV_v2.Controllers
 {
@@ -9,10 +10,12 @@ namespace CV_v2.Controllers
     public class ProfileController : Controller
     {
         private readonly UserContext _context;
+        private readonly UserManager<User> userManager;
 
-        public ProfileController(UserContext context)
+        public ProfileController(UserContext context, UserManager<User> userManager)
         {
             _context = context;
+            this.userManager = userManager;
         }
 
         [HttpGet]
@@ -77,10 +80,30 @@ namespace CV_v2.Controllers
                     return NotFound("Användare hittades inte.");
                 }
 
+                // Uppdatera profilinformation
                 user.Firstname = model.Firstname;
                 user.Lastname = model.Lastname;
                 user.Email = model.Email;
                 user.IsProfilePrivate = model.IsProfilePrivate;
+
+                // Hantera lösenordsändring om det nya lösenordet är ifyllt
+                if (!string.IsNullOrEmpty(model.OldPassword) && !string.IsNullOrEmpty(model.NewPassword) && model.NewPassword == model.ConfirmNewPassword)
+                {
+                    var result = await userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                    if (!result.Succeeded)
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError("", error.Description);
+                        }
+                        return View(model);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Lösenordet kunde inte uppdateras. Kontrollera att det gamla lösenordet är korrekt och att det nya lösenordet och bekräftelsen matchar.");
+                    return View(model);
+                }
 
                 await _context.SaveChangesAsync();
 
@@ -90,6 +113,7 @@ namespace CV_v2.Controllers
 
             return View(model);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> UploadImage(IFormFile pictureFile)
