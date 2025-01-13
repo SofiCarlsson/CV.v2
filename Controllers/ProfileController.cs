@@ -40,7 +40,31 @@ namespace CV_v2.Controllers
             return View(model);
         }
 
-        [Authorize]
+        [Route("Cv/CvSite/{username}")]
+        [HttpGet]
+        public async Task<IActionResult> CVSite(string username)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var cv = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == user.Id);
+
+            var profileViewModel = new ProfileViewModel
+            {
+                User = user,
+                CV = cv,
+                Competences = cv?.Competences.ToList(),
+                Educations = cv?.Educations.ToList(),
+                WorkExperiences = cv?.WorkExperiences.ToList(),
+                MyProjects = user.UserInProjects.ToList()
+            };
+
+            return View(profileViewModel);
+        }
+
         [HttpGet]
         public async Task<IActionResult> CVSite()
         {
@@ -66,7 +90,7 @@ namespace CV_v2.Controllers
             return View(profileViewModel);
         }
 
-        [HttpPost]
+            [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditProfileViewModel model)
         {

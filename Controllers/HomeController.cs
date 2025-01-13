@@ -1,4 +1,5 @@
 using CV_v2.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -17,12 +18,20 @@ namespace CV_v2.Controllers
             _context = service;
         }
 
-        public async Task<IActionResult> Index()
-        {
-            var projects = _context.Projects.ToList();
-            return View(projects);
-        }
+        [HttpGet]
+        public async Task<IActionResult> Index() { 
 
+            var cvs = await _context.CVs.ToListAsync();
+            var projects = await _context.Projects.ToListAsync();
+
+            var startPageViewModel = new StartPageViewModel
+            {
+                Cvs = cvs,
+                Projects = projects
+            };
+
+            return View(startPageViewModel);
+        }
         //public async Task<IActionResult> Shared()
         //{
         //    // Ladda användare och deras tillhörande CV
