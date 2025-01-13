@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CV_v2.Models.Project>
+﻿@model StartPageViewModel
 
 
 <form method="post" asp-controller="Account" asp-action="Logout">
@@ -21,7 +21,7 @@
 @* ett urval av CVs som är registrerade och länkar till personens profil vars CV det är *@
 <br />
 <br />
-<h2>CVs</h2>
+<h2>Cvs</h2>
 
 <table class="table table-striped">
     <thead>
@@ -35,12 +35,32 @@
         </tr>
     </thead>
     <tbody>
-        <td>Förnamn + Efternamn</td>
-    <td>CV beskrivning</td>
-    <td>Kompetensnamn</td>
-    <td>Utbildning skolanamn + utbildningnamn</td>
-    <td>Jobbtitel</td>
-    @* <td><a asp-controller="Profile" asp-action="CVSite" asp-route-username="@USER">Besök profil</a></td> *@
+        @foreach (var cv in Model.Cvs)
+        {
+            <tr>
+                <td>@cv.User.Firstname @cv.User.Lastname</td>
+                <td>@cv.Description</td>
+                <td>
+                    @foreach (var competence in cv.Competences)
+                    {
+                        <span>@competence.Competences.CompetenceName<br /></span>
+                    }
+                </td>
+                <td>
+                    @foreach (var education in cv.Educations)
+                    {
+                        <span>@education.Education.SchoolName @education.Education.Degree<br /></span>
+                    }
+                </td>
+                <td>
+                    @foreach (var experience in cv.WorkExperiences)
+                    {
+                        <span>@experience.WorkExperience.WorkTitle<br /></span>
+                    }
+                </td>
+                <td><a asp-controller="Profile" asp-action="CVSite" asp-route-username="@cv.User.UserName">Besök profil</a></td>
+            </tr>
+        }
     </tbody>
 </table>
 
@@ -61,7 +81,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var project in Model.OrderByDescending(id => id.ProjectID))
+        @foreach (var project in Model.Projects.OrderByDescending(id => id.ProjectID))
         {
             <tr>
                 <td>@project.Title</td>
