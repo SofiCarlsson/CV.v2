@@ -30,3 +30,9 @@
     </div>
     <button type="submit" class="btn btn-primary mt-3">Skapa CV</button>
 </form>
+
+<!-- Knapp för att navigera till redigera CV -->
+<form asp-action="Edit" asp-controller="CV" asp-route-id="@Model.CVId">
+    <button type="submit">Redigera CV</button>
+</form>
+
