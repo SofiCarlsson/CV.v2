@@ -1,0 +1,26 @@
+﻿@model Message
+
+<h4>Skicka meddelande till @@ @Model.TillUser.UserName</h4>
+
+<form asp-action="SendMessage" asp-controller="Message" asp-route-toUserName="@Model.TillUser.UserName" method="post">
+
+	<input type="hidden" name="toUsername" value="@ViewBag.RecipientUsername" />
+
+	<div class="form-group">
+		<label for="Content">Meddelande: </label>
+		<input asp-for="Content" class="form-control" />
+		<span asp-validation-for="Content" class="text-danger"></span>
+	</div>
+
+	@if (!@User.Identity.IsAuthenticated)
+	{
+	<div class="form-group">
+		<label for="Anonym">Vänligen ange ditt namn: </label>
+		<input asp-for="Anonym" class="form-control" />
+		<span asp-validation-for="Anonym" class="text-danger"></span>
+	</div>
+	}
+
+	<button type="submit" class="btn btn-primary mt-3">Skicka meddelande</button>
+	<a asp-action="CVSite" asp-controller="Profile" class="btn btn-secondary mt-3">Avbryt</a>
+</form>

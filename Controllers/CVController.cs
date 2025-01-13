@@ -31,7 +31,8 @@ namespace CV_v2.Controllers
             {
                 return NotFound();
             }
-            return View(cv);
+            // Explicit ange sökvägen till vyn om det behövs
+            return View("Views/CV/Edit.cshtml", cv);
         }
 
         // POST: Edit CV
@@ -40,7 +41,8 @@ namespace CV_v2.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(updatedCV);
+                // Explicit ange sökvägen till vyn om det behövs
+                return View("Views/CV/Edit.cshtml", updatedCV);
             }
 
             var existingCV = _context.CVs.FirstOrDefault(c => c.CVId == updatedCV.CVId);
@@ -54,8 +56,9 @@ namespace CV_v2.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            return View(updatedCV);
+            return View("Views/CV/Edit.cshtml", updatedCV);
         }
+
 
         // GET: Create CV
         [Authorize]

@@ -7,6 +7,7 @@
 			<div class="container text-center">
 				<h2 class="display-4 text-decoration-underline">@Model.User.Firstname @Model.User.Lastname</h2>
 				<h4 class="lead">@@ @User.Identity.Name</h4>
+				<p>@Model.CV.Description</p>
 			</div>
 		</div>
 	</div>
@@ -124,5 +125,6 @@
 		<p>Namn: @Model.User.Firstname @Model.User.Lastname</p>
 		<p>Adress: @Model.User.Address</p>
 		<p>Epost: @Model.User.Email</p>
+		<a asp-action="SendMessage" asp-controller="Message" asp-route-id="@Model.CV.User.UserName">Skicka meddelande</a>
 	</div>
 </div>

@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using CV_v2.Models;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Projekt_CV_Site.Controllers
 {
@@ -84,7 +86,7 @@ namespace Projekt_CV_Site.Controllers
 
         // Metod för att skicka ett meddelande anonymt meddelande
         [HttpPost]
-        public async Task<IActionResult> SkickaAnonymMessage(string content, string anonym, string tillUserId)
+        public async Task<IActionResult> SendMessageAnon(string content, string anonym, string tillUserId)
         {
             if (ModelState.IsValid)
             {
@@ -157,48 +159,59 @@ namespace Projekt_CV_Site.Controllers
             return Ok();
         }
 
+        [Route("Message/SendMessage/{toUserName}")]
         [HttpGet]
-        public IActionResult NyttMessage()
+        public async Task<IActionResult> SendMessage(string toUserName)
         {
-            var users = userContext.Users.ToList();
-            var viewModel = new NewMessage
+            if (string.IsNullOrEmpty(toUserName))
             {
-                Users = new SelectList(users, "Id", "UserName"),  
+                return BadRequest("Användarnamn saknas.");
+            }
+            var toUser = await userContext.Users.FirstOrDefaultAsync(u => u.UserName == toUserName);
+
+            var newMessage = new Message
+            {
+                TillUser = toUser,
+                TillUserId = toUser.Id
             };
-            return View(viewModel);
+            ViewBag.RecipientUsername = toUserName;
+            return View(newMessage);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> NewMessages()
+        [HttpPost]
+        public async Task<IActionResult> SendMessage(Message message, string? Anonym, string toUserName)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return RedirectToAction("Login", "Account");
-            }
-            var currentUser = await userManager.GetUserAsync(User);
-            var currentUserID = currentUser?.Id ?? string.Empty;  
 
-            var viewModel = new NewMessage
-            {
-                Users = new SelectList(await userContext.Users.ToListAsync(), "Id", "UserName")  
-            };
+            var toUser = await userContext.Users.FirstOrDefaultAsync(u => u.UserName == toUserName);
 
-            var olastaMessages = await userContext.Messages
-                .Where(m => m.last == false && m.TillUserId == currentUserID)
-                .Include(m => m.FranUser)
-                .ToListAsync();
+            //Rensar modelstate annars blir den arg
+            ModelState.Remove("TillUser");
+            ModelState.Remove("TillUserId");
 
-            if (olastaMessages.Any())
+            message.TillUser = toUser;
+            message.TillUserId = toUser.Id;
+
+            if (!User.Identity.Name.IsNullOrEmpty())
             {
-                ViewBag.UserMessagesOlasta = olastaMessages;
+                //Hämtar id från den inloggade användaren
+                string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await userContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+                message.FranUser = user;
+                message.FranUserId = userId;
             }
             else
             {
-                ViewBag.UserMessagesOlasta = new List<Message>();
+                message.Anonym = Anonym;
             }
 
-            return View(viewModel);
+            userContext.Messages.Add(message);
+            await userContext.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Home");
+
         }
+          
 
         [HttpGet]
         public async Task<IActionResult> VisaMessages(string selectedUserId)
