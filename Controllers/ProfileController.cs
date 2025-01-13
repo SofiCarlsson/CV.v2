@@ -1,150 +1,127 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using CV_v2.Models;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
+using CV_v2.Models;
 
-public class ProfileController : Controller
+namespace CV_v2.Controllers
 {
-    private readonly UserContext _context;
-
-    public ProfileController(UserContext context)
-    {
-        _context = context;
-    }
-
-    // Visa profil
     [Authorize]
-    [HttpGet]
-    public async Task<IActionResult> Index()
+    public class ProfileController : Controller
     {
-        var username = User.Identity.Name;
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
-        var userId = user.Id;
-        var cv = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == userId);
+        private readonly UserContext _context;
 
-        var model = new EditProfileViewModel
+        public ProfileController(UserContext context)
         {
-            Firstname = user.Firstname,
-            Lastname = user.Lastname,
-            Email = user.Email,
-            Cv = cv
-        };
+            _context = context;
+        }
 
-        return View(model);
-    }
-
-    // Redigera profil
-    [Authorize]
-    [HttpGet]
-    public async Task<IActionResult> Edit()
-    {
-        var username = User.Identity.Name;
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
-        var userId = user.Id;
-        var cv = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == userId);
-
-        var model = new EditProfileViewModel
+        [HttpGet]
+        public async Task<IActionResult> Edit()
         {
-            Firstname = user.Firstname,
-            Lastname = user.Lastname,
-            Email = user.Email,
-            Cv = cv
-        };
+            var username = User.Identity.Name;
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
 
+            if (user == null)
+            {
+                return NotFound("Användare hittades inte.");
+            }
 
-        return View(model);
-    }
+            var model = new EditProfileViewModel
+            {
+                Firstname = user.Firstname,
+                Lastname = user.Lastname,
+                Email = user.Email,
+                IsProfilePrivate = user.IsProfilePrivate // Lägg till detta
+            };
 
-    // Uppdatera profil
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(EditProfileViewModel model)
-    {
-        if (ModelState.IsValid)
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> CVSite()
         {
-            var user = await _context.Users
-                .Include(u => u.CV)  // Om du har en relation till CV
-                .FirstOrDefaultAsync(u => u.UserName == User.Identity.Name);
-
+            var username = User.Identity.Name;
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
             if (user == null)
             {
                 return NotFound();
             }
 
-            user.Firstname = model.Firstname;
-            user.Lastname = model.Lastname;
-            user.Email = model.Email;
+            var cv = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == user.Id);
 
-            // Om användaren har ett CV, uppdatera det
-            if (model.Cv.CVId != 0)
+            var profileViewModel = new ProfileViewModel
             {
-                user.CV = await _context.CVs.FirstOrDefaultAsync(c => c.CVId == model.Cv.CVId);
+                User = user,
+                CV = cv,
+                Competences = cv?.Competences.ToList(),
+                Educations = cv?.Educations.ToList(),
+                WorkExperiences = cv?.WorkExperiences.ToList(),
+                MyProjects = user.UserInProjects.ToList()
+            };
+
+            return View(profileViewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EditProfileViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var username = User.Identity.Name;
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+
+                if (user == null)
+                {
+                    return NotFound("Användare hittades inte.");
+                }
+
+                user.Firstname = model.Firstname;
+                user.Lastname = model.Lastname;
+                user.Email = model.Email;
+                user.IsProfilePrivate = model.IsProfilePrivate;
+
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Profilen har uppdaterats.";
+                return RedirectToAction("Edit");
             }
 
-            await _context.SaveChangesAsync();
+            return View(model);
+        }
 
-            TempData["SuccessMessage"] = "Profilen har uppdaterats";
+        [HttpPost]
+        public async Task<IActionResult> UploadImage(IFormFile pictureFile)
+        {
+            if (pictureFile != null && pictureFile.Length > 0)
+            {
+                var username = User.Identity.Name;
+                var user = await _context.Users.Include(u => u.CV).FirstOrDefaultAsync(u => u.UserName == username);
 
+                if (user == null || user.CV == null)
+                {
+                    TempData["ErrorMessage"] = "Kunde inte hitta användaren eller deras CV.";
+                    return RedirectToAction("Edit");
+                }
+
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", pictureFile.FileName);
+                var newPicturePath = Path.Combine("images", pictureFile.FileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await pictureFile.CopyToAsync(stream);
+                }
+
+                user.CV.PicturePath = newPicturePath;
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Profilbilden har uppdaterats.";
+                return RedirectToAction("Edit");
+            }
+
+            TempData["ErrorMessage"] = "Ingen fil valdes.";
             return RedirectToAction("Edit");
         }
-
-        return View(model);
     }
-
-    [Authorize]
-    [HttpGet]
-    public async Task<IActionResult> CVSite()
-    {
-        var username = User.Identity.Name;
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
-        var userId = user.Id;
-        var cv = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == userId);
-
-        var profileViewModel = new ProfileViewModel
-        {
-            User = user,
-            CV = cv,
-            Competences = cv.Competences.ToList(),
-            Educations = cv.Educations.ToList(),
-            WorkExperiences = cv.WorkExperiences.ToList(),
-            MyProjects = user.UserInProjects.ToList()
-        };
-
-        return View(profileViewModel);
-    }
-
-
-    [HttpPost]
-    public async Task<IActionResult> UploadImage(EditProfileViewModel model)
-    {
-
-        if (model.Cv != null && model.Cv.PictureFile.Length > 0)
-        {
-            //Hämta CV
-            var username = User.Identity.Name;
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
-            var userId = user.Id;
-            var cv = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == userId);
-
-            // Spara sökvägen och bilden
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", model.Cv.PictureFile.FileName);
-            var newPicturePath = Path.Combine("images", model.Cv.PictureFile.FileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                // Spara filen till den angivna platsen
-                await model.Cv.PictureFile.CopyToAsync(stream);
-            }
-
-            cv.PicturePath = newPicturePath;
-            
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("CVSite");
-        }
-
-        return View(model);
-    }
-
 }
