@@ -1,10 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CV_v2.Models
 {
     public class Project
     {
         public int ProjectID { get; set; }
+
+        [Required]
+        [StringLength(100, ErrorMessage = "Titeln får max vara 100 tecken lång.")]
         public string Title { get; set; }
         public string Description { get; set; }
 
