@@ -2,49 +2,42 @@
 
 <h2>Användare: </h2>
 
-<form asp-controller="User" form asp-action="Index" method="get">
+<form asp-controller="User" asp-action="Index" method="get">
     <label for="firstNameFilter">Filtrera på förnamn:</label>
-    <input type="text" id="firstNameFilter" name="id" placeholder="Skriv in förnamn" />
+    <input type="text" id="firstNameFilter" name="firstNameFilter" placeholder="Skriv in förnamn" value="@ViewData["FirstNameFilter"]" />
     <button type="submit">Filter</button>
 </form>
 
 <table class="table">
     <thead>
-    <td>ID</td>
-    <td>Firstname</td>
-    <td>Lastname</td>
-    <td>Email</td>
-    <td>Användarnamn</td>
-    <td>Password</td>
-    <td>CV</td>
+        <tr>
+            <th>Förnamn</th>
+            <th>Efternamn</th>
+            <th>Email</th>
+            <th>Användarnamn</th>
+            <th>CV</th>
+        </tr>
     </thead>
     <tbody>
-
         @foreach (var user in Model)
         {
             <tr>
-                <td>@user.Id</td>
                 <td>@user.Firstname</td>
                 <td>@user.Lastname</td>
                 <td>@user.Email</td>
                 <td>@user.UserName</td>
-                <td>@user.PasswordHash</td>
                 <td>
                     @if (User.Identity.IsAuthenticated)
                     {
                         @if (user.CV != null)
                         {
-                            <!-- Om användaren har ett CV, visa redigera-knappen -->
                             <a asp-controller="CV" asp-action="Edit" asp-route-id="@user.CV.CVId" class="btn btn-warning">Redigera CV</a>
                         }
                         else
                         {
-                            <!-- Om användaren inte har ett CV, visa skapa-knappen -->
                             <a asp-controller="CV" asp-action="Create" asp-route-id="@user.Id" class="btn btn-primary">Skapa CV</a>
                         }
                     }
-
-
                 </td>
             </tr>
         }

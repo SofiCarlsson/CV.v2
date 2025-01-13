@@ -18,7 +18,10 @@ namespace CV_v2.Controllers
         [HttpGet]
         public IActionResult ShowProjects()
         {
-            var projects = _context.Projects.ToList();
+            var projects = _context.Projects
+         .Include(p => p.UsersInProject)
+         .ThenInclude(up => up.User)
+         .ToList();
             return View(projects);
         }
 
@@ -93,10 +96,20 @@ namespace CV_v2.Controllers
         [HttpGet]
         public IActionResult EditProjects(int projectID)
         {
-            var project = _context.Projects.Find(projectID);
+            var project = _context.Projects
+                .Include(p => p.User)
+                .FirstOrDefault(p => p.ProjectID == projectID);
+
             if (project == null)
             {
                 return NotFound();
+            }
+
+            // Kontrollera om den inloggade användaren är skaparen
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (project.CreatedBy != userId)
+            {
+                return Forbid("Du har inte rätt att redigera detta projekt.");
             }
 
             List<SelectListItem> users = _context.Users.Select(x => new SelectListItem
@@ -109,13 +122,30 @@ namespace CV_v2.Controllers
             return View(project);
         }
 
-        // POST: Handle editing an existing project
         [HttpPost]
         public IActionResult EditProjects(Project project)
         {
+            // Kontrollera om projektet existerar
+            var existingProject = _context.Projects.Find(project.ProjectID);
+            if (existingProject == null)
+            {
+                return NotFound();
+            }
+
+            // Kontrollera om den inloggade användaren är skaparen
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (existingProject.CreatedBy != userId)
+            {
+                return Forbid("Du har inte rätt att redigera detta projekt.");
+            }
+
+            // Uppdatera endast titel och beskrivning
+            existingProject.Title = project.Title;
+            existingProject.Description = project.Description;
+
             if (ModelState.IsValid)
             {
-                _context.Projects.Update(project);
+                _context.Projects.Update(existingProject);
                 _context.SaveChanges();
                 return RedirectToAction("ShowProjects");
             }
@@ -129,6 +159,7 @@ namespace CV_v2.Controllers
             ViewBag.Users = users;
             return View(project);
         }
+
 
         // GET: Show details for a specific project
         [HttpGet]
