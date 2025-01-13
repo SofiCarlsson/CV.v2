@@ -6,17 +6,26 @@
     <input type="hidden" asp-for="CVId" />
     <input type="hidden" asp-for="User" />
 
-    <div>
-        <label>Kompetenser:</label>
-        <input asp-for="Competences" class="form-control" />
+    <div class="form-group">
+        <label for="Description">Beskrivning:</label>
+        <textarea asp-for="Description" class="form-control">@Model.Description</textarea>
     </div>
-    <div>
-        <label>Utbildning:</label>
-        <input asp-for="Educations" class="form-control" />
+
+    <div class="form-group">
+        <label for="Competences">Kompetenser:</label>
+        <select asp-for="Competences" asp-items="@ViewBag.CompetenceOptions" class="form-control" multiple></select>
     </div>
-    <div>
-        <label>Arbetserfarenhet:</label>
-        <input asp-for="WorkExperiences" class="form-control" />
+
+    <div class="form-group">
+        <label for="Educations">Utbildning:</label>
+        <select asp-for="Educations" asp-items="@ViewBag.EducationOptions" class="form-control" multiple></select>
     </div>
+
+    <div class="form-group">
+        <label for="WorkExperiences">Arbetserfarenhet:</label>
+        <select asp-for="WorkExperiences" asp-items="@ViewBag.WorkExperienceOptions" class="form-control" multiple></select>
+    </div>
+
     <button type="submit" class="btn btn-success mt-3">Spara ändringar</button>
 </form>
+
