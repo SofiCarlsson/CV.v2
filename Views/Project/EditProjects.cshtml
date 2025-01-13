@@ -5,7 +5,7 @@
 
 <h2>Redigera projekt</h2>
 
-<form asp-action="Edit" method="post">
+<form asp-action="EditProjects" method="post">
     <input type="hidden" asp-for="ProjectID" />
 
     <div class="form-group">
@@ -18,12 +18,6 @@
         <label asp-for="Description" class="control-label"></label>
         <textarea asp-for="Description" class="form-control"></textarea>
         <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="CreatedBy" class="control-label">Created By</label>
-        <select asp-for="CreatedBy" class="form-control" asp-items="ViewBag.Users"></select>
-        <span asp-validation-for="CreatedBy" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Spara ändringar</button>
