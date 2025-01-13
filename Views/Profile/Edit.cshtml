@@ -2,7 +2,6 @@
 
 <h2>Redigera Profil</h2>
 
-<!-- Visa bekräftelsemeddelande om det finns något i TempData -->
 @if (TempData["SuccessMessage"] != null)
 {
     <div class="alert alert-success">
@@ -16,7 +15,7 @@ else if (TempData["ErrorMessage"] != null)
     </div>
 }
 
-<form method="post">
+<form method="post" asp-action="Edit">
     <div class="form-group">
         <label for="Firstname">Förnamn</label>
         <input type="text" class="form-control" id="Firstname" name="Firstname" value="@Model.Firstname" required />
@@ -30,28 +29,18 @@ else if (TempData["ErrorMessage"] != null)
         <input type="email" class="form-control" id="Email" name="Email" value="@Model.Email" required />
     </div>
     <div class="form-group">
-        <label for="CVId">CV</label>
-        <select class="form-control" id="CVId" name="CVId">
-            <option value="0">Inget CV</option>
-            @if (ViewBag.CVOptions != null)
-            {
-                @foreach (var cv in ViewBag.CVOptions)
-                {
-                    <option value="@cv">@cv</option>
-                }
-            }
-            else
-            {
-                <p>Inga CV-alternativ tillgängliga.</p>
-            }
-        </select>
+        <input type="checkbox" id="IsProfilePrivate" name="IsProfilePrivate" @(Model.IsProfilePrivate ? "checked" : "") />
+        <label for="IsProfilePrivate">Gör profilen privat</label>
     </div>
-    <button type="submit" class="btn btn-primary">Uppdatera</button>
+    <button type="submit" class="btn btn-primary">Spara ändringar</button>
 </form>
 
 <br>
+
 <form asp-action="UploadImage" method="post" enctype="multipart/form-data">
-    <label for="PictureFile">Ladda upp en profilbild:</label>
-    <input type="file" name="Cv.PictureFile" id="PictureFile" />
-    <button type="submit">Ladda upp</button>
+    <div class="form-group">
+        <label for="pictureFile">Ladda upp profilbild:</label>
+        <input type="file" name="pictureFile" id="pictureFile" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-secondary">Ladda upp bild</button>
 </form>
