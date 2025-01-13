@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using CV_v2.Models;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Projekt_CV_Site.Controllers
 {
@@ -211,33 +212,15 @@ namespace Projekt_CV_Site.Controllers
             return RedirectToAction("Index", "Home");
 
         }
-          
 
+        [Authorize]
         [HttpGet]
-        public async Task<IActionResult> VisaMessages(string selectedUserId)
+        public async Task<IActionResult> ShowMessages()
         {
-            var currentUser = await userManager.GetUserAsync(User);
-            var currentUserID = currentUser?.Id ?? string.Empty;  
-
-            
-            var viewModel = new NewMessage();
-
-           
-            var users = await userContext.Users.ToListAsync();
-            viewModel.Users = new SelectList(users, "Id", "UserName");  
-
-            if (!string.IsNullOrEmpty(selectedUserId) && !string.IsNullOrEmpty(currentUserID))
-            {
-                var userMessages = await userContext.Messages
-                    .Include(m => m.FranUser)
-                    .Where(m => (m.TillUserId == selectedUserId && m.FranUserId == currentUserID)
-                             || (m.FranUserId == selectedUserId && m.TillUserId == currentUserID))
-                    .OrderBy(m => m.SentTime)
-                    .ToListAsync();
-
-                ViewBag.UserMessages = userMessages;
-            }
-            return View("AllMessages", viewModel);
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await userContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+  
+            return View();
         }
 
         [HttpPost]

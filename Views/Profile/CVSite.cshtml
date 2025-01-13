@@ -6,7 +6,7 @@
 		<div class="p-5 mb-4" style="background-color: #BADEEC; border-radius: .5rem;">
 			<div class="container text-center">
 				<h2 class="display-4 text-decoration-underline">@Model.User.Firstname @Model.User.Lastname</h2>
-				<h4 class="lead">@@ @User.Identity.Name</h4>
+				<h4 class="lead">@@ @Model.User.UserName</h4>
 				<p>@Model.CV.Description</p>
 			</div>
 		</div>
@@ -125,6 +125,9 @@
 		<p>Namn: @Model.User.Firstname @Model.User.Lastname</p>
 		<p>Adress: @Model.User.Address</p>
 		<p>Epost: @Model.User.Email</p>
-		<a asp-action="SendMessage" asp-controller="Message" asp-route-id="@Model.CV.User.UserName">Skicka meddelande</a>
+		@if (!Model.User.UserName.Equals(User.Identity.Name))
+		{
+			<a asp-action="SendMessage" asp-controller="Message" asp-route-id="@Model.CV.User.UserName">Skicka meddelande</a>
+		}
 	</div>
 </div>
