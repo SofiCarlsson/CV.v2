@@ -29,7 +29,7 @@ else if (TempData["ErrorMessage"] != null)
         <input type="email" class="form-control" id="Email" name="Email" value="@Model.Email" required />
     </div>
     <div class="form-group">
-        <input type="checkbox" id="IsProfilePrivate" name="IsProfilePrivate" @(Model.IsProfilePrivate ? "checked" : "") />
+        <input type="checkbox" asp-for="IsProfilePrivate" />
         <label for="IsProfilePrivate">Gör profilen privat</label>
     </div>
     <button type="submit" class="btn btn-primary">Spara ändringar</button>
