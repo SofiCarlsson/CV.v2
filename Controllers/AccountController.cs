@@ -46,9 +46,19 @@ namespace CV_v2.Controllers
                 {
                     foreach (var error in result.Errors)
                     {
-                        ModelState.AddModelError("", error.Description);
+                        string errorMessage = error.Code switch
+                        {
+                            "PasswordTooShort" => "Lösenordet är för kort.",
+                            "PasswordRequiresNonAlphanumeric" => "Lösenordet måste innehålla minst ett specialtecken.",
+                            "PasswordRequiresDigit" => "Lösenordet måste innehålla minst en siffra.",
+                            "DuplicateUserName" => "Användarnamnet är redan taget.",
+                            _ => "Ett okänt fel uppstod."
+                        };
+
+                        ModelState.AddModelError("", errorMessage);
                     }
                 }
+
             }
             return View(registerViewModel);
         }
