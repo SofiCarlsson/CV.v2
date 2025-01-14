@@ -229,37 +229,5 @@ namespace CV_v2.Controllers
             ViewBag.Users = users;
             return View(project);
         }
-
-        [HttpGet]
-        public IActionResult Details(int projectID)
-        {
-            var project = _context.Projects
-                .Include(p => p.User)
-                .Include(p => p.UsersInProject)
-                .ThenInclude(up => up.User)
-                .FirstOrDefault(p => p.ProjectID == projectID);
-
-            if (project == null)
-            {
-                return NotFound();
-            }
-
-            return View(project);
-        }
-
-        [HttpGet]
-        public IActionResult Remove(int projectID)
-        {
-            var project = _context.Projects.Find(projectID);
-            return View(project);
-        }
-
-        [HttpPost]
-        public IActionResult Remove(Project project)
-        {
-            _context.Projects.Remove(project);
-            _context.SaveChanges();
-            return RedirectToAction("ShowProjects");
-        }
     }
 }
