@@ -35,10 +35,28 @@
                 <td>
                     @foreach (var user in project.UsersInProject.OrderBy(u => u.User.Lastname).ThenBy(u => u.User.Firstname))
                     {
-                        <span>@user.User.Firstname @user.User.Lastname<br /></span>
+                        @if (!User.Identity.IsAuthenticated && user.User.IsProfilePrivate)
+                        {
+                            <span>Privat profil</span>
+                            <br />
+                        }
+                        else
+                        {
+                            @user.User.Firstname @user.User.Lastname
+                            <br />
+                        }
                     }
                 </td>
-                <td>@project.User?.Firstname @project.User?.Lastname</td>
+                <td>
+                    @if (!User.Identity.IsAuthenticated && project.User.IsProfilePrivate)
+                    {
+                        <span>Privat profil</span>
+                    }
+                    else
+                    {
+                        @project.User.Firstname @project.User.Lastname  
+                    }
+                </td>
                 <td>
                     <a asp-action="EditProjects" asp-route-projectID="@project.ProjectID" class="btn btn-warning btn-sm">Redigera projekt</a>
 

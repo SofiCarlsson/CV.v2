@@ -26,11 +26,11 @@
 {
     <a asp-action="Login" asp-controller="Account">Logga in</a>
 }
-<br />
-<a asp-action="Create" asp-controller="CV">Skapa CV</a>
 
 <br />
 <br />
+<br />
+
 <div class="info-box">
     <h4>Filtrera CVs</h4>
     <p>Här kan du filtrera CVn och få fram alla projekt som den personen ingår i via förnamn. Ange ett namn i sökfältet och tryck på "Filtrera".</p>
@@ -105,6 +105,18 @@
             @foreach (var project in Model.Projects.OrderByDescending(id => id.ProjectID))
             {
                 <tr>
+                    <td>
+                        <span>
+                            @if (!User.Identity.IsAuthenticated && project.User.IsProfilePrivate)
+                            {
+                                <span>Privat profil</span>
+                            }
+                            else
+                            {
+                                @project.User.Firstname @project.User.Lastname
+                            }
+                        </span>
+                    </td>
                     <td>@project.User?.Firstname @project.User?.Lastname</td>
                     <td>@project.Title</td>
                     <td>@project.Description</td>
@@ -114,13 +126,14 @@
                             <span>
                                 @if (!User.Identity.IsAuthenticated && user.User.IsProfilePrivate)
                                 {
-                                    <span>Dold profil<br /></span>
-                               }
+                                    <span>Privat profil</span>
+                                    <br />
+                                }
                                 else
                                 {
                                     @user.User.Firstname @user.User.Lastname
+                                    <br />
                                 }
-                                <br />
                             </span>
                         }
                     </td>

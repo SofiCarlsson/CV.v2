@@ -55,7 +55,6 @@ namespace CV_v2.Controllers
             if (!User.Identity.IsAuthenticated)
             {
                 cvs = cvs.Where(cv => !cv.User.IsProfilePrivate); // Endast offentliga profiler
-                projects = projects.Where(p => !p.User.IsProfilePrivate); // Endast offentliga projekt
             }
 
             // Filtrera på förnamn om angivet

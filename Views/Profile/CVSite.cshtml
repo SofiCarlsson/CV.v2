@@ -109,7 +109,18 @@
 						<td>
 							@foreach (var user in project.Project.UsersInProject.OrderBy(u => u.User.Lastname).ThenBy(u => u.User.Firstname))
 							{
-								<span>@user.User.Firstname @user.User.Lastname<br /></span>
+								<span>
+									@if (!User.Identity.IsAuthenticated && user.User.IsProfilePrivate)
+									{
+										<span>Privat profil</span>
+										<br />
+									}
+									else
+									{
+										<span>@user.User.Firstname @user.User.Lastname</span>
+										<br />
+									}
+								</span>
 							}
 						</td>
 					</tr>
