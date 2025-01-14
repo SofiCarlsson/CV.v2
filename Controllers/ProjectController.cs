@@ -31,8 +31,17 @@ namespace CV_v2.Controllers
                 projects = projects.Where(p => p.User != null && !p.User.IsProfilePrivate);
             }
 
+            // Filtrera deltagare om de är från privata profiler
+            foreach (var project in projects)
+            {
+                project.UsersInProject = project.UsersInProject
+                    .Where(up => !up.User.IsProfilePrivate || User.Identity.IsAuthenticated)
+                    .ToList();
+            }
+
             return View(projects.ToList());
         }
+
 
 
 
@@ -145,6 +154,35 @@ namespace CV_v2.Controllers
 
             TempData["Message"] = "Du har gått med i projektet!";
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> LeaveProject(int projectId)
+        {
+            // Hämta den inloggade användarens ID
+            string userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["Error"] = "Du måste vara inloggad för att lämna ett projekt.";
+                return RedirectToAction("ShowProjects");
+            }
+
+            // Kontrollera om projektet existerar
+            var userInProject = await _context.UserInProjects
+                .FirstOrDefaultAsync(up => up.ProjectId == projectId && up.UserId == userId);
+
+            if (userInProject == null)
+            {
+                TempData["Error"] = "Du är inte med i detta projekt eller projektet kunde inte hittas.";
+                return RedirectToAction("ShowProjects");
+            }
+
+            // Ta bort användaren från projektet
+            _context.UserInProjects.Remove(userInProject);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("ShowProjects");
         }
 
 

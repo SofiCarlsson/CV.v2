@@ -29,14 +29,11 @@
 <br />
 <a asp-action="Create" asp-controller="CV">Skapa CV</a>
 
-
-
-@* ett urval av CVs som är registrerade och länkar till personens profil vars CV det är *@
 <br />
 <br />
 <div class="info-box">
     <h4>Filtrera CVs</h4>
-    <p>Här kan du filtrera CVn och Projekt efter förnamn. Ange ett namn i sökfältet och tryck på "Filtrera".</p>
+    <p>Här kan du filtrera CVn och få fram alla projekt som den personen ingår i via förnamn. Ange ett namn i sökfältet och tryck på "Filtrera".</p>
     <p>Lämna fältet tomt för att se alla CVn.</p>
 </div>
 <form asp-controller="Home" asp-action="Index" method="get" class="mb-3">
@@ -45,8 +42,6 @@
         <button type="submit" class="btn btn-primary">Filtrera</button>
     </div>
 </form>
-
-
 
 <table class="table table-striped">
     <thead>
@@ -91,10 +86,8 @@
     </tbody>
 </table>
 
-@* information om det senast upplagda projektet som personer kan koppla till sina profiler. *@
 <br />
 <br />
-
 @if (Model.Projects.Any())
 {
     <h2>Alla Projekt</h2>
@@ -118,7 +111,17 @@
                     <td>
                         @foreach (var user in project.UsersInProject.OrderBy(u => u.User.Lastname).ThenBy(u => u.User.Firstname))
                         {
-                            <span>@user.User.Firstname @user.User.Lastname<br /></span>
+                            <span>
+                                @if (!User.Identity.IsAuthenticated && user.User.IsProfilePrivate)
+                                {
+                                    <span>Dold profil<br /></span>
+                               }
+                                else
+                                {
+                                    @user.User.Firstname @user.User.Lastname
+                                }
+                                <br />
+                            </span>
                         }
                     </td>
                     <td>
@@ -136,8 +139,3 @@ else
 {
     <p>Inga projekt att visa.</p>
 }
-
-
-
-
-
