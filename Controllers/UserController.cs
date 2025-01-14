@@ -16,22 +16,23 @@ namespace CV_v2.Controllers
             users = service;
         }
 
+
+        //Metod för att kunna filtrera användare efter bokstav (de privata profilerna visas inte)
         [HttpGet]
         public IActionResult Index(string firstNameFilter)
         {
-            IQueryable<User> userList = from user in users.Users select user;
-
-            // Om firstNameFilter inte är tomt, filtrera användarna baserat på förnamn
+            IQueryable<User> userList = from user in users.Users
+                                        where !user.IsProfilePrivate 
+                                        select user;
+            
             if (!string.IsNullOrEmpty(firstNameFilter))
             {
                 userList = userList.Where(user => user.Firstname.ToLower().Contains(firstNameFilter.ToLower()));
             }
 
-            // Skicka användarlistan till vyn
             ViewData["FirstNameFilter"] = firstNameFilter;
-            return View("ShowUsers", userList.ToList());  // Returnera ShowUser-vyn istället för Index
+            return View("ShowUsers", userList.ToList()); 
         }
-
 
 
         [HttpPost]
@@ -52,22 +53,18 @@ namespace CV_v2.Controllers
             }
         }
 
+        //När man tycker på fliken Användare vissas alla användare utom de som är private.
         [Authorize]
         [HttpGet]
         public async Task<ActionResult> ShowUsers()
         {
-            // Ladda användare och deras tillhörande CV
+      
             var usersList = await users.Users
-                .Include(u => u.CV) // Inkludera relaterade CV-objekt
+                .Where(u => !u.IsProfilePrivate) 
+                .Include(u => u.CV) 
                 .ToListAsync();
 
             return View(usersList);
-        }
-       
-        [HttpGet]
-        public ActionResult Test()
-        {
-            return View("test");
         }
 
         [HttpPost]
