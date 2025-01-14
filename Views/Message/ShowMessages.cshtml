@@ -1,3 +1,81 @@
-﻿@model Message
+﻿@model IEnumerable<Message>
 
-<h4>Dina meddelanden</h4
+<h4>Dina meddelanden</h4>
+
+<br />
+
+<h5>Nya meddelanden</h5>
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Från</th>
+			<th>Meddelande</th>
+			<th>Skickat</th>
+			<th>Markera som läst</th>
+		</tr>
+	</thead>
+	<tbody>
+		@if (ViewData["UnreadMessages"] != null && ((List<Message>)ViewData["UnreadMessages"]).Any())
+		{
+			@foreach (var message in ((List<Message>)ViewData["UnreadMessages"]).OrderBy(m => m.SentTime))
+			{
+				<tr>
+					<td>@message.FranUser.UserName</td>
+					<td>@message.Content</td>
+					<td>@message.SentTime.ToString("dd-MM-yyyy HH:mm")</td>
+					<td>
+						<form asp-controller="Message" asp-action="ChangeReadStatus" method="post">
+							<input type="hidden" name="messageId" value="@message.MessageId" />
+							<button type="submit" class="btn btn-danger">Markera som läst</button>
+						</form>
+					</td>
+				</tr>
+			}
+		}
+		else
+		{
+			<tr>
+				<td colspan="4">Inga nya meddelanden att visa.</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+<h5>Lästa meddelanden</h5>
+<table class="table table-striped">
+	<thead>
+		<tr>
+			<th>Från</th>
+			<th>Meddelande</th>
+			<th>Skickat</th>
+			<th>Markera som oläst</th>
+		</tr>
+	</thead>
+	<tbody>
+		@if (ViewData["ReadMessages"] != null && ((List<Message>)ViewData["ReadMessages"]).Any())
+		{
+			@foreach (var message in ((List<Message>)ViewData["ReadMessages"]).OrderBy(m => m.SentTime))
+			{
+				<tr>
+					<td>@message.FranUser.UserName</td>
+					<td>@message.Content</td>
+					<td>@message.SentTime.ToString("dd-MM-yyyy HH:mm")</td>
+					<td>
+
+						<form asp-controller="Message" asp-action="ChangeReadStatus" method="post">
+							<input type="hidden" name="messageId" value="@message.MessageId" />
+							<button type="submit" class="btn btn-primary">Markera som oläst</button>
+						</form>
+
+					</td>
+				</tr>
+			}
+		}
+		else
+		{
+			<tr>
+				<td colspan="4">Inga lästa meddelanden att visa.</td>
+			</tr>
+		}
+	</tbody>
+</table>

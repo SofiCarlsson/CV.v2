@@ -1,14 +1,10 @@
 ﻿using CV_v2.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CV_v2.Controllers
 {
@@ -21,42 +17,130 @@ namespace CV_v2.Controllers
             _context = context;
         }
 
-        // GET: Edit CV
         [Authorize]
         [HttpGet]
         public IActionResult Edit(int id)
         {
-            var cv = _context.CVs.FirstOrDefault(c => c.CVId == id);
+            var cv = _context.CVs
+                .Include(c => c.Competences)
+                .ThenInclude(cc => cc.Competences)
+                .Include(c => c.Educations)
+                .ThenInclude(ce => ce.Education)
+                .Include(c => c.WorkExperiences)
+                .ThenInclude(cw => cw.WorkExperience)
+                .FirstOrDefault(c => c.CVId == id);
+
             if (cv == null)
             {
                 return NotFound();
             }
-            // Explicit ange sökvägen till vyn om det behövs
-            return View("Views/CV/Edit.cshtml", cv);
+
+            ViewBag.CompetenceOptions = _context.Competences.Select(c => new SelectListItem
+            {
+                Value = c.CompetencesID.ToString(),
+                Text = c.CompetenceName,
+                Selected = cv.Competences.Any(cc => cc.CompetencesID == c.CompetencesID)
+            }).ToList();
+
+            ViewBag.EducationOptions = _context.Educations.Select(e => new SelectListItem
+            {
+                Value = e.EducationID.ToString(),
+                Text = e.Degree + " - " + e.SchoolName,
+                Selected = cv.Educations.Any(ce => ce.EducationID == e.EducationID)
+            }).ToList();
+
+            ViewBag.WorkExperienceOptions = _context.WorkExperiences.Select(w => new SelectListItem
+            {
+                Value = w.WorkExperienceID.ToString(),
+                Text = w.WorkTitle,
+                Selected = cv.WorkExperiences.Any(cw => cw.WorkExperienceID == w.WorkExperienceID)
+            }).ToList();
+
+            return View(cv);
         }
 
-        // POST: Edit CV
         [HttpPost]
-        public IActionResult Edit(CV updatedCV)
+        public async Task<IActionResult> Edit(CV updatedCV, List<int> Competences, List<int> Educations, List<int> WorkExperiences)
         {
+            //Hämtar id från den inloggade användaren
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var currentCV = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == user.Id);
+
+            //Rensar modelstate annars blir den arg
+            ModelState.Remove("User");
+            ModelState.Remove("UserId");
+
+            //Sätter UserID i CV till den inloggade användaren
+            updatedCV.UserId = userId;
+            updatedCV.User = user;
+            updatedCV.CVId = currentCV.CVId;
+
+
             if (!ModelState.IsValid)
             {
-                // Explicit ange sökvägen till vyn om det behövs
-                return View("Views/CV/Edit.cshtml", updatedCV);
+
+                ViewBag.CompetenceOptions = _context.Competences.Select(c => new SelectListItem
+                {
+                    Value = c.CompetencesID.ToString(),
+                    Text = c.CompetenceName
+                }).ToList();
+
+                ViewBag.EducationOptions = _context.Educations.Select(e => new SelectListItem
+                {
+                    Value = e.EducationID.ToString(),
+                    Text = e.Degree + " - " + e.SchoolName
+                }).ToList();
+
+                ViewBag.WorkExperienceOptions = _context.WorkExperiences.Select(w => new SelectListItem
+                {
+                    Value = w.WorkExperienceID.ToString(),
+                    Text = w.WorkTitle
+                }).ToList();
+
+                return View(updatedCV);
             }
 
-            var existingCV = _context.CVs.FirstOrDefault(c => c.CVId == updatedCV.CVId);
-            if (existingCV != null)
+
+            if (currentCV != null)
             {
-                existingCV.Competences = updatedCV.Competences;
-                existingCV.Educations = updatedCV.Educations;
-                existingCV.WorkExperiences = updatedCV.WorkExperiences;
+                currentCV.Description = updatedCV.Description;
+
+                currentCV.Competences.Clear();
+                foreach (var competenceId in Competences)
+                {
+                    var competence = _context.Competences.Find(competenceId);
+                    if (competence != null)
+                    {
+                        currentCV.Competences.Add(new CvCompetences { CV = currentCV, Competences = competence });
+                    }
+                }
+
+                currentCV.Educations.Clear();
+                foreach (var educationId in Educations)
+                {
+                    var education = _context.Educations.Find(educationId);
+                    if (education != null)
+                    {
+                        currentCV.Educations.Add(new CvEducation { CV = currentCV, Education = education });
+                    }
+                }
+
+                currentCV.WorkExperiences.Clear();
+                foreach (var workExperienceId in WorkExperiences)
+                {
+                    var workExperience = _context.WorkExperiences.Find(workExperienceId);
+                    if (workExperience != null)
+                    {
+                        currentCV.WorkExperiences.Add(new CvWorkExperience { CV = currentCV, WorkExperience = workExperience });
+                    }
+                }
 
                 _context.SaveChanges();
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("CVSite", "Profile");
             }
 
-            return View("Views/CV/Edit.cshtml", updatedCV);
+            return View(updatedCV);
         }
 
 

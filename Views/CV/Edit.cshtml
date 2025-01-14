@@ -2,9 +2,15 @@
 
 <h2>Redigera CV</h2>
 
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
 <form asp-action="Edit" asp-controller="CV" method="post">
     <input type="hidden" asp-for="CVId" />
-    <input type="hidden" asp-for="User" />
 
     <div class="form-group">
         <label for="Description">Beskrivning:</label>
@@ -29,3 +35,8 @@
     <button type="submit" class="btn btn-success mt-3">Spara ändringar</button>
 </form>
 
+<div>
+    <a href="@Url.Action("AddCompetence", "CV")" class="btn btn-primary mt-3">Lägg till Kompetens</a>
+    <a href="@Url.Action("AddEducation", "CV")" class="btn btn-primary mt-3">Lägg till Utbildning</a>
+    <a href="@Url.Action("AddWorkExperience", "CV")" class="btn btn-primary mt-3">Lägg till Arbetserfarenhet</a>
+</div>
