@@ -25,7 +25,9 @@ namespace CV_v2.Models
 
         [Required(ErrorMessage = "Vänligen skriv en adress.")]
         public string Address { get; set; }
-        [Required(ErrorMessage = "Vänligen skriv en email.")]
+
+        [Required(ErrorMessage = "Vänligen skriv en e-postadress.")]
+        [EmailAddress(ErrorMessage = "Ogiltig e-postadress.")]
         public string Email { get; set; }
         public bool IsProfilePrivate { get; set; }
 
