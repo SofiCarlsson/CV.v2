@@ -21,7 +21,13 @@
 @* ett urval av CVs som är registrerade och länkar till personens profil vars CV det är *@
 <br />
 <br />
-<h2>Cvs</h2>
+<form asp-controller="Home" asp-action="Index" method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="firstname" class="form-control" placeholder="Filtrera på förnamn" value="@ViewData["Firstname"]" />
+        <button type="submit" class="btn btn-primary">Filtrera</button>
+    </div>
+</form>
+
 
 <table class="table table-striped">
     <thead>
@@ -58,7 +64,9 @@
                         <span>@experience.WorkExperience.WorkTitle<br /></span>
                     }
                 </td>
-                <td><a asp-controller="Profile" asp-action="CVSite" asp-route-username="@cv.User.UserName">Besök profil</a></td>
+                <td>
+                    <a asp-controller="Profile" asp-action="CVSite" asp-route-username="@cv.User.UserName">Besök profil</a>
+                </td>
             </tr>
         }
     </tbody>
