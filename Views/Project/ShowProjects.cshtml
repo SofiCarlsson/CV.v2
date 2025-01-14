@@ -7,6 +7,14 @@
 
 <a asp-action="Add" class="btn btn-success mb-3">Lägg till nytt projekt</a>
 
+
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="alert alert-danger">
+        @ViewBag.ErrorMessage
+    </div>
+}
+
 <table class="table table-striped">
     <thead>
         <tr>
