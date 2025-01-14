@@ -34,6 +34,7 @@ namespace CV_v2.Controllers
                 Firstname = user.Firstname,
                 Lastname = user.Lastname,
                 Email = user.Email,
+                Address = user.Address, // Lägg till detta
                 IsProfilePrivate = user.IsProfilePrivate // Lägg till detta
             };
 
@@ -108,6 +109,7 @@ namespace CV_v2.Controllers
                 user.Firstname = model.Firstname;
                 user.Lastname = model.Lastname;
                 user.Email = model.Email;
+                user.Address = model.Address;
                 user.IsProfilePrivate = model.IsProfilePrivate;
 
                 // Hantera lösenordsändring om det nya lösenordet är ifyllt
