@@ -32,7 +32,8 @@ namespace CV_v2.Controllers
 
             if (cv == null)
             {
-                return NotFound();
+                TempData["ErrorMessage"] = "Du måste skapa ett CV innan du kan redigera det.";
+                return RedirectToAction("Create");
             }
 
             ViewBag.CompetenceOptions = _context.Competences.Select(c => new SelectListItem
@@ -67,6 +68,8 @@ namespace CV_v2.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             var currentCV = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == user.Id);
 
+            if (currentCV == null) { TempData["ErrorMessage"] = "Du måste skapa ett CV innan du kan redigera det."; 
+                return RedirectToAction("Create"); }
 
             //Rensar modelstate annars blir den arg
             ModelState.Remove("User");
