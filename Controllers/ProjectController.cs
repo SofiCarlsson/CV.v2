@@ -109,7 +109,8 @@ namespace CV_v2.Controllers
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (project.CreatedBy != userId)
             {
-                return Forbid("Du har inte rätt att redigera detta projekt.");
+                ViewBag.ErrorMessage = "Du har inte behörighet att redigera detta projekt.";
+                return View("ShowProjects", _context.Projects.ToList());
             }
 
             List<SelectListItem> users = _context.Users.Select(x => new SelectListItem
@@ -136,7 +137,8 @@ namespace CV_v2.Controllers
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (existingProject.CreatedBy != userId)
             {
-                return Forbid("Du har inte rätt att redigera detta projekt.");
+                ViewBag.ErrorMessage = "Du har inte behörighet att redigera detta projekt.";
+                return View("ShowProjects", _context.Projects.ToList());
             }
 
             // Uppdatera endast titel och beskrivning
@@ -147,6 +149,7 @@ namespace CV_v2.Controllers
             {
                 _context.Projects.Update(existingProject);
                 _context.SaveChanges();
+                TempData["SuccessMessage"] = "Projektet har uppdaterats.";
                 return RedirectToAction("ShowProjects");
             }
 
