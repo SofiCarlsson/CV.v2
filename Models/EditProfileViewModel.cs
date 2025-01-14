@@ -18,15 +18,19 @@ namespace CV_v2.Models
 
         [Required(ErrorMessage = "Vänligen ange en adress.")]
         public string Address { get; set; }
-        
+
+        [Required(ErrorMessage = "Vänligen skriv ditt lösenord.")]
         [DataType(DataType.Password)]
         [Display(Name = "Gammalt lösenord")]
         public string OldPassword { get; set; }
 
+
+        [Required(ErrorMessage = "Vänligen skriv ett lösenord.")]
         [DataType(DataType.Password)]
         [Display(Name = "Nytt lösenord")]
         public string NewPassword { get; set; }
 
+        [Required(ErrorMessage = "Vänligen skriv ett lösenord.")]
         [DataType(DataType.Password)]
         [Compare("NewPassword", ErrorMessage = "Lösenorden matchar inte.")]
         [Display(Name = "Bekräfta nytt lösenord")]
