@@ -60,10 +60,26 @@ namespace CV_v2.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(CV updatedCV, List<int> Competences, List<int> Educations, List<int> WorkExperiences)
+        public async Task<IActionResult> Edit(CV updatedCV, List<int> Competences, List<int> Educations, List<int> WorkExperiences)
         {
+            //Hämtar id från den inloggade användaren
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var currentCV = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == user.Id);
+
+            //Rensar modelstate annars blir den arg
+            ModelState.Remove("User");
+            ModelState.Remove("UserId");
+
+            //Sätter UserID i CV till den inloggade användaren
+            updatedCV.UserId = userId;
+            updatedCV.User = user;
+            updatedCV.CVId = currentCV.CVId;
+
+
             if (!ModelState.IsValid)
             {
+
                 ViewBag.CompetenceOptions = _context.Competences.Select(c => new SelectListItem
                 {
                     Value = c.CompetencesID.ToString(),
@@ -85,49 +101,43 @@ namespace CV_v2.Controllers
                 return View(updatedCV);
             }
 
-            var existingCV = _context.CVs
-                .Include(c => c.Competences)
-                .Include(c => c.Educations)
-                .Include(c => c.WorkExperiences)
-                .FirstOrDefault(c => c.CVId == updatedCV.CVId);
 
-            if (existingCV != null)
+            if (currentCV != null)
             {
-                existingCV.Description = updatedCV.Description;
+                currentCV.Description = updatedCV.Description;
 
-                existingCV.Competences.Clear();
+                currentCV.Competences.Clear();
                 foreach (var competenceId in Competences)
                 {
                     var competence = _context.Competences.Find(competenceId);
                     if (competence != null)
                     {
-                        existingCV.Competences.Add(new CvCompetences { CV = existingCV, Competences = competence });
+                        currentCV.Competences.Add(new CvCompetences { CV = currentCV, Competences = competence });
                     }
                 }
 
-                existingCV.Educations.Clear();
+                currentCV.Educations.Clear();
                 foreach (var educationId in Educations)
                 {
                     var education = _context.Educations.Find(educationId);
                     if (education != null)
                     {
-                        existingCV.Educations.Add(new CvEducation { CV = existingCV, Education = education });
+                        currentCV.Educations.Add(new CvEducation { CV = currentCV, Education = education });
                     }
                 }
 
-                existingCV.WorkExperiences.Clear();
+                currentCV.WorkExperiences.Clear();
                 foreach (var workExperienceId in WorkExperiences)
                 {
                     var workExperience = _context.WorkExperiences.Find(workExperienceId);
                     if (workExperience != null)
                     {
-                        existingCV.WorkExperiences.Add(new CvWorkExperience { CV = existingCV, WorkExperience = workExperience });
+                        currentCV.WorkExperiences.Add(new CvWorkExperience { CV = currentCV, WorkExperience = workExperience });
                     }
                 }
 
                 _context.SaveChanges();
-                TempData["SuccessMessage"] = "Dina ändringar har sparats!";
-                return RedirectToAction("Edit", new { id = existingCV.CVId });
+                return RedirectToAction("CVSite", "Profile");
             }
 
             return View(updatedCV);
