@@ -101,6 +101,7 @@ namespace Projekt_CV_Site.Controllers
                 message.Anonym = Anonym;
             }
 
+            message.last = false;
             userContext.Messages.Add(message);
             await userContext.SaveChangesAsync();
 
