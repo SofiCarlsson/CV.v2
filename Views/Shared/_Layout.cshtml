@@ -27,11 +27,7 @@
 							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Hem</a>
 						</li>
 						<li class="nav-item">
-							@if (User.Identity.IsAuthenticated)
-							{
-								<!-- Om användaren är inloggad, visa fliken för CV -->
 								<a class="nav-link text-dark" asp-controller="CV" asp-action="Create">CV</a>
-							}
 						</li>
 
 						<li class="nav-item">
