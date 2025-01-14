@@ -13,7 +13,7 @@
 {
     <a asp-action="Login" asp-controller="Account">Logga in</a>
 }
-
+<br />
 <a asp-action="Create" asp-controller="CV">Skapa CV</a>
 
 
@@ -21,12 +21,18 @@
 @* ett urval av CVs som är registrerade och länkar till personens profil vars CV det är *@
 <br />
 <br />
+<div class="info-box">
+    <h4>Filtrera CVs</h4>
+    <p>Här kan du filtrera CVn och Projekt efter förnamn. Ange ett namn i sökfältet och tryck på "Filtrera".</p>
+    <p>Lämna fältet tomt för att se alla CVn.</p>
+</div>
 <form asp-controller="Home" asp-action="Index" method="get" class="mb-3">
     <div class="input-group">
         <input type="text" name="firstname" class="form-control" placeholder="Filtrera på förnamn" value="@ViewData["Firstname"]" />
         <button type="submit" class="btn btn-primary">Filtrera</button>
     </div>
 </form>
+
 
 
 <table class="table table-striped">
@@ -72,26 +78,24 @@
     </tbody>
 </table>
 
-
-
 @* information om det senast upplagda projektet som personer kan koppla till sina profiler. *@
 <br />
 <br />
 <h2>Alla Projekt</h2>
-
 <table class="table table-striped">
     <thead>
         <tr>
+            <th>Skapat av</th>
             <th>Titel</th>
             <th>Beskrivning</th>
             <th>Deltagare</th>
-            <th>Skapat av</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var project in Model.Projects.OrderByDescending(id => id.ProjectID))
         {
             <tr>
+                <td>@project.User?.Firstname @project.User?.Lastname</td>
                 <td>@project.Title</td>
                 <td>@project.Description</td>
                 <td>
@@ -100,11 +104,11 @@
                         <span>@user.User.Firstname @user.User.Lastname<br /></span>
                     }
                 </td>
-                <td>@project.User?.Firstname @project.User?.Lastname</td>
             </tr>
         }
     </tbody>
 </table>
+
 
 
 
