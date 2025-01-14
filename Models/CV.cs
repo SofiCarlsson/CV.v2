@@ -8,6 +8,7 @@ namespace CV_v2.Models
 	{
         [Key]
 		public int CVId { get; set; }
+        [Required(ErrorMessage = "Vänligen skriv en beskrivning.")]
         public string Description { get; set; }
 
         //Navigering till User.
