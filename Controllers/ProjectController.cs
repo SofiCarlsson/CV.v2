@@ -145,6 +145,14 @@ namespace CV_v2.Controllers
             existingProject.Title = project.Title;
             existingProject.Description = project.Description;
 
+            ModelState.Remove("User");
+            ModelState.Remove("CreatedBy");
+            var user = _context.Users.Find(project.CreatedBy);
+            existingProject.User = user;
+            existingProject.CreatedBy = userId;
+
+
+
             if (ModelState.IsValid)
             {
                 _context.Projects.Update(existingProject);
