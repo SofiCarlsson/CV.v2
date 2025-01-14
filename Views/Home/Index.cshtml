@@ -1,5 +1,18 @@
 ﻿@model StartPageViewModel
 
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Message"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
 
 <form method="post" asp-controller="Account" asp-action="Logout">
     @if (User.Identity.IsAuthenticated)
@@ -81,34 +94,48 @@
 @* information om det senast upplagda projektet som personer kan koppla till sina profiler. *@
 <br />
 <br />
-<h2>Alla Projekt</h2>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Skapat av</th>
-            <th>Titel</th>
-            <th>Beskrivning</th>
-            <th>Deltagare</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var project in Model.Projects.OrderByDescending(id => id.ProjectID))
-        {
-            <tr>
-                <td>@project.User?.Firstname @project.User?.Lastname</td>
-                <td>@project.Title</td>
-                <td>@project.Description</td>
-                <td>
-                    @foreach (var user in project.UsersInProject.OrderBy(u => u.User.Lastname).ThenBy(u => u.User.Firstname))
-                    {
-                        <span>@user.User.Firstname @user.User.Lastname<br /></span>
-                    }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
 
+@if (Model.Projects.Any())
+{
+    <h2>Alla Projekt</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Skapat av</th>
+                <th>Titel</th>
+                <th>Beskrivning</th>
+                <th>Deltagare</th>
+                <th>Gå med projekt</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var project in Model.Projects.OrderByDescending(id => id.ProjectID))
+            {
+                <tr>
+                    <td>@project.User?.Firstname @project.User?.Lastname</td>
+                    <td>@project.Title</td>
+                    <td>@project.Description</td>
+                    <td>
+                        @foreach (var user in project.UsersInProject.OrderBy(u => u.User.Lastname).ThenBy(u => u.User.Firstname))
+                        {
+                            <span>@user.User.Firstname @user.User.Lastname<br /></span>
+                        }
+                    </td>
+                    <td>
+                        <form asp-controller="Project" asp-action="JoinProject" method="post">
+                            <input type="hidden" name="projectId" value="@project.ProjectID" />
+                            <button type="submit" class="btn btn-primary">Gå med i projekt</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Inga projekt att visa.</p>
+}
 
 
 

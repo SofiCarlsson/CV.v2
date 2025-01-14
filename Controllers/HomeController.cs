@@ -16,6 +16,8 @@ namespace CV_v2.Controllers
             _context = context;
         }
 
+
+        //Metod för att sortera förstasidan
         [HttpGet]
         public async Task<IActionResult> Index(string firstname)
         {
@@ -31,7 +33,7 @@ namespace CV_v2.Controllers
                 .AsQueryable();
 
             var projects = _context.Projects
-                .Include(p => p.User) // Inkludera skaparen av projektet
+                .Include(p => p.User) 
                 .Include(p => p.UsersInProject)
                 .ThenInclude(up => up.User)
                 .AsQueryable();
@@ -39,29 +41,26 @@ namespace CV_v2.Controllers
             // Om användaren inte är inloggad, filtrera bort privata profiler
             if (!User.Identity.IsAuthenticated)
             {
-                cvs = cvs.Where(cv => !cv.User.IsProfilePrivate); // Endast offentliga profiler
+                cvs = cvs.Where(cv => !cv.User.IsProfilePrivate); 
+                projects = projects.Where(p => p.User != null && !p.User.IsProfilePrivate); 
             }
 
             // Filtrera på förnamn om angivet
             if (!string.IsNullOrWhiteSpace(firstname))
             {
-                firstname = firstname.ToLower(); // Gör input case-insensitive
-
-                // Filtrera CV:n
+                firstname = firstname.ToLower();
                 cvs = cvs.Where(cv => cv.User.Firstname.ToLower().StartsWith(firstname));
 
                 // Filtrera projekt baserat på skaparen
-                projects = projects.Where(p => p.User.Firstname.ToLower().StartsWith(firstname));
+                projects = projects.Where(p => p.User != null && p.User.Firstname.ToLower().StartsWith(firstname));
             }
 
-            // Skapa modellen för vyn
             var startPageViewModel = new StartPageViewModel
             {
                 Cvs = await cvs.ToListAsync(),
                 Projects = await projects.ToListAsync()
             };
 
-            // Skicka tillbaka sökparametern för att återfylla sökfältet
             ViewData["Firstname"] = firstname;
 
             return View(startPageViewModel);
