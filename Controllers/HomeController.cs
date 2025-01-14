@@ -17,19 +17,6 @@ namespace CV_v2.Controllers
         }
 
 
-        //Metod för att hålla koll på om Användaren är privat.
-        private IEnumerable<UserInProject> FilterPrivateProfiles(IEnumerable<UserInProject> usersInProject, bool isAuthenticated)
-        {
-            if (!isAuthenticated)
-            {
-                // Filtrera bort deltagare med privata profiler om användaren inte är inloggad
-                return usersInProject.Where(up => !up.User.IsProfilePrivate).ToList();
-            }
-
-            // Returnera alla deltagare om användaren är inloggad
-            return usersInProject;
-        }
-
         //Metod för att visa info
         [HttpGet]
         public async Task<IActionResult> Index(string firstname)
@@ -65,9 +52,6 @@ namespace CV_v2.Controllers
                 // Filtrera CV:n
                 cvs = cvs.Where(cv => cv.User.Firstname.ToLower().StartsWith(firstname));
 
-                // Filtrera projekt baserat på skaparen
-                projects = projects.Where(p => p.User.Firstname.ToLower().StartsWith(firstname)
-                    || p.UsersInProject.Any(up => up.User.Firstname.ToLower().StartsWith(firstname)));
             }
 
             // Skapa modellen för vyn
