@@ -119,7 +119,7 @@ namespace Projekt_CV_Site.Controllers
             var messages = await userContext.Messages
                 .Include(m => m.FranUser)
                 .Include(m => m.TillUser)
-                .Where(m => m.TillUserId == userId || m.FranUserId == userId)
+                .Where(m => m.TillUserId == userId)
                 .ToListAsync();
 
             var unreadMessages = messages.Where(m => m.last == false).ToList();
