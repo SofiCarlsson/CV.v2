@@ -5,6 +5,8 @@
 <form asp-action="Create" asp-controller="CV" method="post">
     <input type="hidden" asp-for="UserId" />
 
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
     <div class="form-group">
         <label for="Description">Beskrivning:</label>
         <input asp-for="Description" class="form-control" />
