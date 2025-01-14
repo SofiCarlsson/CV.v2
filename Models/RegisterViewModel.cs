@@ -9,7 +9,7 @@ namespace CV_v2.Models
         public string Username { get; set; }
         [Required(ErrorMessage = "Vänligen skriv lösenord.")]
         [DataType(DataType.Password)]
-        [Compare("BekraftaLosenord")]
+        [Compare("BekraftaLosenord", ErrorMessage = "Lösenorden matchar inte.")]
         public string Password { get; set; }
         [Required(ErrorMessage = "Vänlingen bekräfta lösenordet")]
         [DataType(DataType.Password)]

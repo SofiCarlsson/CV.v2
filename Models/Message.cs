@@ -7,6 +7,8 @@ namespace CV_v2.Models
     public class Message
     {
         public int MessageId { get; set; }
+
+        [Required(ErrorMessage = "Vänligen fyll i meddelandefältet.")]
         public string Content { get; set; }
         public DateTime SentTime { get; set; } = DateTime.Now;
         public bool? last { get; set; }
