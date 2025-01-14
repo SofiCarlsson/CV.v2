@@ -31,8 +31,17 @@ namespace CV_v2.Controllers
                 projects = projects.Where(p => p.User != null && !p.User.IsProfilePrivate);
             }
 
+            // Filtrera deltagare om de är från privata profiler
+            foreach (var project in projects)
+            {
+                project.UsersInProject = project.UsersInProject
+                    .Where(up => !up.User.IsProfilePrivate || User.Identity.IsAuthenticated)
+                    .ToList();
+            }
+
             return View(projects.ToList());
         }
+
 
 
 
