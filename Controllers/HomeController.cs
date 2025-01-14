@@ -30,6 +30,12 @@ namespace CV_v2.Controllers
                 .ThenInclude(w => w.WorkExperience)
                 .AsQueryable();
 
+            var projects = _context.Projects
+                .Include(p => p.User) // Inkludera skaparen av projektet
+                .Include(p => p.UsersInProject)
+                .ThenInclude(up => up.User)
+                .AsQueryable();
+
             // Om användaren inte är inloggad, filtrera bort privata profiler
             if (!User.Identity.IsAuthenticated)
             {
@@ -40,17 +46,19 @@ namespace CV_v2.Controllers
             if (!string.IsNullOrWhiteSpace(firstname))
             {
                 firstname = firstname.ToLower(); // Gör input case-insensitive
-                cvs = cvs.Where(cv => cv.User.Firstname.ToLower().StartsWith(firstname)); // Kontrollera att namnet börjar med bokstaven
-            }
 
-            // Hämta projekt
-            var projects = await _context.Projects.ToListAsync();
+                // Filtrera CV:n
+                cvs = cvs.Where(cv => cv.User.Firstname.ToLower().StartsWith(firstname));
+
+                // Filtrera projekt baserat på skaparen
+                projects = projects.Where(p => p.User.Firstname.ToLower().StartsWith(firstname));
+            }
 
             // Skapa modellen för vyn
             var startPageViewModel = new StartPageViewModel
             {
                 Cvs = await cvs.ToListAsync(),
-                Projects = projects
+                Projects = await projects.ToListAsync()
             };
 
             // Skicka tillbaka sökparametern för att återfylla sökfältet
@@ -58,6 +66,7 @@ namespace CV_v2.Controllers
 
             return View(startPageViewModel);
         }
+
 
         public IActionResult Privacy()
         {
