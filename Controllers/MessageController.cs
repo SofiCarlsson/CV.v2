@@ -102,6 +102,7 @@ namespace Projekt_CV_Site.Controllers
                 if (string.IsNullOrEmpty(anonym))
                 {
                     ModelState.AddModelError("Anonym", "Namn är obligatoriskt.");
+                    ViewBag.RecipientUsername = toUserName;
                     return View(message);
                 }
 
