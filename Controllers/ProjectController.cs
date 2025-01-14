@@ -20,11 +20,21 @@ namespace CV_v2.Controllers
         public IActionResult ShowProjects()
         {
             var projects = _context.Projects
-         .Include(p => p.UsersInProject)
-         .ThenInclude(up => up.User)
-         .ToList();
-            return View(projects);
+                .Include(p => p.UsersInProject)
+                .ThenInclude(up => up.User)
+                .Include(p => p.User) // Inkludera skaparen av projektet
+                .AsQueryable();
+
+            // Om användaren inte är inloggad, filtrera bort projekt från privata profiler
+            if (!User.Identity.IsAuthenticated)
+            {
+                projects = projects.Where(p => p.User != null && !p.User.IsProfilePrivate);
+            }
+
+            return View(projects.ToList());
         }
+
+
 
         // GET: Show form to add a new project
         [HttpGet]
