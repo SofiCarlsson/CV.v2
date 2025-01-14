@@ -101,7 +101,7 @@ namespace Projekt_CV_Site.Controllers
             {
                 if (string.IsNullOrEmpty(anonym))
                 {
-                    ModelState.AddModelError("Anonym", "Anonym-fältet är obligatoriskt.");
+                    ModelState.AddModelError("Anonym", "Namn är obligatoriskt.");
                     return View(message);
                 }
 
