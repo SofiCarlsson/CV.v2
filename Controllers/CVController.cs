@@ -67,6 +67,7 @@ namespace CV_v2.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             var currentCV = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == user.Id);
 
+
             //Rensar modelstate annars blir den arg
             ModelState.Remove("User");
             ModelState.Remove("UserId");
@@ -187,6 +188,14 @@ namespace CV_v2.Controllers
             //Hämtar id från den inloggade användaren
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            // Kolla om användaren redan har ett CV
+            var existingCV = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == userId);
+            if (existingCV != null)
+            {
+                ModelState.AddModelError("", "Du har redan ett CV. Du kan inte skapa ett nytt.");
+                return View(newCV);
+            }
 
             //Rensar modelstate annars blir den arg
             ModelState.Remove("User");
