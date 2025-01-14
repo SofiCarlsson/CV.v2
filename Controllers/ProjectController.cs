@@ -1,4 +1,5 @@
 ﻿using CV_v2.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +20,21 @@ namespace CV_v2.Controllers
         public IActionResult ShowProjects()
         {
             var projects = _context.Projects
-         .Include(p => p.UsersInProject)
-         .ThenInclude(up => up.User)
-         .ToList();
-            return View(projects);
+                .Include(p => p.UsersInProject)
+                .ThenInclude(up => up.User)
+                .Include(p => p.User) // Inkludera skaparen av projektet
+                .AsQueryable();
+
+            // Om användaren inte är inloggad, filtrera bort projekt från privata profiler
+            if (!User.Identity.IsAuthenticated)
+            {
+                projects = projects.Where(p => p.User != null && !p.User.IsProfilePrivate);
+            }
+
+            return View(projects.ToList());
         }
+
+
 
         // GET: Show form to add a new project
         [HttpGet]
@@ -91,6 +102,51 @@ namespace CV_v2.Controllers
             ViewBag.Users = users;
             return View(project);
         }
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> JoinProject(int projectId)
+        {
+            // Hämta den inloggade användarens ID
+            string userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                TempData["Error"] = "Du måste vara inloggad för att gå med i ett projekt.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Kontrollera om projektet existerar
+            var project = await _context.Projects
+                .Include(p => p.UsersInProject)
+                .FirstOrDefaultAsync(p => p.ProjectID == projectId);
+
+            if (project == null)
+            {
+                TempData["Error"] = "Projektet kunde inte hittas.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Kontrollera om användaren redan är med i projektet
+            if (project.UsersInProject.Any(up => up.UserId == userId))
+            {
+                TempData["Error"] = "Du är redan med i det här projektet.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Lägg till användaren till projektet
+            var userInProject = new UserInProject
+            {
+                ProjectId = projectId,
+                UserId = userId
+            };
+
+            _context.UserInProjects.Add(userInProject);
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Du har gått med i projektet!";
+            return RedirectToAction("Index", "Home");
+        }
+
 
         // GET: Show form to edit an existing project
         [HttpGet]
