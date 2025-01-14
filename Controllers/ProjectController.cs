@@ -25,20 +25,6 @@ namespace CV_v2.Controllers
                 .Include(p => p.User) // Inkludera skaparen av projektet
                 .AsQueryable();
 
-            // Om användaren inte är inloggad, filtrera bort projekt från privata profiler
-            if (!User.Identity.IsAuthenticated)
-            {
-                projects = projects.Where(p => p.User != null && !p.User.IsProfilePrivate);
-            }
-
-            // Filtrera deltagare om de är från privata profiler
-            foreach (var project in projects)
-            {
-                project.UsersInProject = project.UsersInProject
-                    .Where(up => !up.User.IsProfilePrivate || User.Identity.IsAuthenticated)
-                    .ToList();
-            }
-
             return View(projects.ToList());
         }
 
