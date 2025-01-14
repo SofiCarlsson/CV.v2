@@ -24,3 +24,9 @@
 	<button type="submit" class="btn btn-primary mt-3">Skicka meddelande</button>
 	<a asp-action="CVSite" asp-controller="Profile" class="btn btn-secondary mt-3">Avbryt</a>
 </form>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

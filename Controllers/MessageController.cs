@@ -6,6 +6,7 @@ using CV_v2.Models;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
+using System.ComponentModel.DataAnnotations;
 
 namespace Projekt_CV_Site.Controllers
 {
@@ -75,7 +76,7 @@ namespace Projekt_CV_Site.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendMessage(Message message, string? Anonym, string toUserName)
+        public async Task<IActionResult> SendMessage(Message message, string? anonym, string toUserName)
         {
 
             var toUser = await userContext.Users.FirstOrDefaultAsync(u => u.UserName == toUserName);
@@ -87,9 +88,9 @@ namespace Projekt_CV_Site.Controllers
             message.TillUser = toUser;
             message.TillUserId = toUser.Id;
 
-            if (!User.Identity.Name.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(User.Identity.Name))
             {
-                //Hämtar id från den inloggade användaren
+
                 string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var user = await userContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
@@ -98,7 +99,17 @@ namespace Projekt_CV_Site.Controllers
             }
             else
             {
-                message.Anonym = Anonym;
+                if (string.IsNullOrEmpty(anonym))
+                {
+                    ModelState.AddModelError("Anonym", "Anonym-fältet är obligatoriskt.");
+                    return View(message);
+                }
+
+                else
+                { 
+                    message.Anonym = anonym; 
+                }
+
             }
 
             message.last = false;

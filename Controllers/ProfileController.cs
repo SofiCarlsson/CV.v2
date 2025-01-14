@@ -41,6 +41,7 @@ namespace CV_v2.Controllers
             return View(model);
         }
 
+        [AllowAnonymous]
         [Route("Cv/CvSite/{username}")]
         [HttpGet]
         public async Task<IActionResult> CVSite(string username)
