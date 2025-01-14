@@ -66,6 +66,7 @@ namespace CV_v2.Controllers
             return View(profileViewModel);
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> CVSite()
         {
@@ -78,6 +79,10 @@ namespace CV_v2.Controllers
 
             var cv = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == user.Id);
 
+            if (cv is null)
+            {
+                return RedirectToAction("Create", "CV");
+            }
             var profileViewModel = new ProfileViewModel
             {
                 User = user,
