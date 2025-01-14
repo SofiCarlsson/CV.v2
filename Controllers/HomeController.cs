@@ -30,13 +30,20 @@ namespace CV_v2.Controllers
                 .ThenInclude(w => w.WorkExperience)
                 .AsQueryable();
 
-            // Filtrera om förnamn är angivet
-            if (!string.IsNullOrWhiteSpace(firstname))
+            // Om användaren inte är inloggad, filtrera bort privata profiler
+            if (!User.Identity.IsAuthenticated)
             {
-                firstname = firstname.ToLower(); // Gör input till gemener
-                cvs = cvs.Where(cv => cv.User.Firstname.ToLower().StartsWith(firstname)); // Kontrollera om namnet börjar med bokstaven
+                cvs = cvs.Where(cv => !cv.User.IsProfilePrivate); // Endast offentliga profiler
             }
 
+            // Filtrera på förnamn om angivet
+            if (!string.IsNullOrWhiteSpace(firstname))
+            {
+                firstname = firstname.ToLower(); // Gör input case-insensitive
+                cvs = cvs.Where(cv => cv.User.Firstname.ToLower().StartsWith(firstname)); // Kontrollera att namnet börjar med bokstaven
+            }
+
+            // Hämta projekt
             var projects = await _context.Projects.ToListAsync();
 
             // Skapa modellen för vyn
@@ -51,7 +58,6 @@ namespace CV_v2.Controllers
 
             return View(startPageViewModel);
         }
-
 
         public IActionResult Privacy()
         {
