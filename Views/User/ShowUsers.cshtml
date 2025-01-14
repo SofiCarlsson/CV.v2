@@ -15,7 +15,6 @@
             <th>Efternamn</th>
             <th>Email</th>
             <th>Användarnamn</th>
-            <th>CV</th>
         </tr>
     </thead>
     <tbody>
@@ -26,19 +25,7 @@
                 <td>@user.Lastname</td>
                 <td>@user.Email</td>
                 <td>@user.UserName</td>
-                <td>
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        @if (user.CV != null)
-                        {
-                            <a asp-controller="CV" asp-action="Edit" asp-route-id="@user.CV.CVId" class="btn btn-warning">Redigera CV</a>
-                        }
-                        else
-                        {
-                            <a asp-controller="CV" asp-action="Create" asp-route-id="@user.Id" class="btn btn-primary">Skapa CV</a>
-                        }
-                    }
-                </td>
+                
             </tr>
         }
     </tbody>
