@@ -19,7 +19,9 @@ namespace CV_v2.Controllers
         [HttpGet]
         public IActionResult Index(string firstNameFilter)
         {
-            IQueryable<User> userList = from user in users.Users select user;
+            IQueryable<User> userList = from user in users.Users
+                                        where !user.IsProfilePrivate // Filtrera bort privata profiler
+                                        select user;
 
             // Om firstNameFilter inte är tomt, filtrera användarna baserat på förnamn
             if (!string.IsNullOrEmpty(firstNameFilter))
@@ -31,6 +33,7 @@ namespace CV_v2.Controllers
             ViewData["FirstNameFilter"] = firstNameFilter;
             return View("ShowUsers", userList.ToList());  // Returnera ShowUser-vyn istället för Index
         }
+
 
 
 
