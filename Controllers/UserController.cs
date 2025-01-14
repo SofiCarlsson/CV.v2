@@ -16,8 +16,6 @@ namespace CV_v2.Controllers
             users = service;
         }
 
-
-        //Metod för att kunna filtrera användare efter bokstav (de privata profilerna visas inte)
         [HttpGet]
         public IActionResult Index(string firstNameFilter)
         {
@@ -53,7 +51,6 @@ namespace CV_v2.Controllers
             }
         }
 
-        //När man tycker på fliken Användare vissas alla användare utom de som är private.
         [Authorize]
         [HttpGet]
         public async Task<ActionResult> ShowUsers()

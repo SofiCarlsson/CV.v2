@@ -15,23 +15,18 @@ namespace CV_v2.Controllers
             _context = context;
         }
 
-        // GET: Show all projects
         [HttpGet]
         public IActionResult ShowProjects()
         {
             var projects = _context.Projects
                 .Include(p => p.UsersInProject)
                 .ThenInclude(up => up.User)
-                .Include(p => p.User) // Inkludera skaparen av projektet
+                .Include(p => p.User)
                 .AsQueryable();
 
             return View(projects.ToList());
         }
 
-
-
-
-        // GET: Show form to add a new project
         [HttpGet]
         public IActionResult Add()
         {
@@ -47,7 +42,6 @@ namespace CV_v2.Controllers
             return View();
         }
 
-        // POST: Handle adding a new project
         [HttpPost]
         public IActionResult Add(Project project)
         {
@@ -101,7 +95,6 @@ namespace CV_v2.Controllers
         [Authorize]
         public async Task<IActionResult> JoinProject(int projectId)
         {
-            // Hämta den inloggade användarens ID
             string userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userId))
@@ -110,7 +103,6 @@ namespace CV_v2.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // Kontrollera om projektet existerar
             var project = await _context.Projects
                 .Include(p => p.UsersInProject)
                 .FirstOrDefaultAsync(p => p.ProjectID == projectId);
@@ -121,14 +113,12 @@ namespace CV_v2.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // Kontrollera om användaren redan är med i projektet
             if (project.UsersInProject.Any(up => up.UserId == userId))
             {
                 TempData["Error"] = "Du är redan med i det här projektet.";
                 return RedirectToAction("Index", "Home");
             }
 
-            // Lägg till användaren till projektet
             var userInProject = new UserInProject
             {
                 ProjectId = projectId,
@@ -146,7 +136,6 @@ namespace CV_v2.Controllers
         [Authorize]
         public async Task<IActionResult> LeaveProject(int projectId)
         {
-            // Hämta den inloggade användarens ID
             string userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(userId))
@@ -155,7 +144,6 @@ namespace CV_v2.Controllers
                 return RedirectToAction("ShowProjects");
             }
 
-            // Kontrollera om projektet existerar
             var userInProject = await _context.UserInProjects
                 .FirstOrDefaultAsync(up => up.ProjectId == projectId && up.UserId == userId);
 
@@ -165,14 +153,11 @@ namespace CV_v2.Controllers
                 return RedirectToAction("ShowProjects");
             }
 
-            // Ta bort användaren från projektet
             _context.UserInProjects.Remove(userInProject);
             await _context.SaveChangesAsync();
             return RedirectToAction("ShowProjects");
         }
 
-
-        // GET: Show form to edit an existing project
         [HttpGet]
         public IActionResult EditProjects(int projectID)
         {
@@ -185,7 +170,6 @@ namespace CV_v2.Controllers
                 return NotFound();
             }
 
-            // Kontrollera om den inloggade användaren är skaparen
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (project.CreatedBy != userId)
             {
@@ -206,14 +190,12 @@ namespace CV_v2.Controllers
         [HttpPost]
         public IActionResult EditProjects(Project project)
         {
-            // Kontrollera om projektet existerar
             var existingProject = _context.Projects.Find(project.ProjectID);
             if (existingProject == null)
             {
                 return NotFound();
             }
 
-            // Kontrollera om den inloggade användaren är skaparen
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (existingProject.CreatedBy != userId)
             {
@@ -221,7 +203,6 @@ namespace CV_v2.Controllers
                 return View("ShowProjects", _context.Projects.ToList());
             }
 
-            // Uppdatera endast titel och beskrivning
             existingProject.Title = project.Title;
             existingProject.Description = project.Description;
 
@@ -230,8 +211,6 @@ namespace CV_v2.Controllers
             var user = _context.Users.Find(project.CreatedBy);
             existingProject.User = user;
             existingProject.CreatedBy = userId;
-
-
 
             if (ModelState.IsValid)
             {
@@ -251,8 +230,6 @@ namespace CV_v2.Controllers
             return View(project);
         }
 
-
-        // GET: Show details for a specific project
         [HttpGet]
         public IActionResult Details(int projectID)
         {
@@ -270,7 +247,6 @@ namespace CV_v2.Controllers
             return View(project);
         }
 
-        // GET: Confirm project removal
         [HttpGet]
         public IActionResult Remove(int projectID)
         {
@@ -278,7 +254,6 @@ namespace CV_v2.Controllers
             return View(project);
         }
 
-        // POST: Handle project removal
         [HttpPost]
         public IActionResult Remove(Project project)
         {

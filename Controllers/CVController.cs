@@ -63,7 +63,6 @@ namespace CV_v2.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(CV updatedCV, List<int> Competences, List<int> Educations, List<int> WorkExperiences)
         {
-            //Hämtar id från den inloggade användaren
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             var currentCV = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == user.Id);
@@ -71,11 +70,9 @@ namespace CV_v2.Controllers
             if (currentCV == null) { TempData["ErrorMessage"] = "Du måste skapa ett CV innan du kan redigera det."; 
                 return RedirectToAction("Create"); }
 
-            //Rensar modelstate annars blir den arg
             ModelState.Remove("User");
             ModelState.Remove("UserId");
 
-            //Sätter UserID i CV till den inloggade användaren
             updatedCV.UserId = userId;
             updatedCV.User = user;
             updatedCV.CVId = currentCV.CVId;
@@ -147,15 +144,12 @@ namespace CV_v2.Controllers
             return View(updatedCV);
         }
 
-
-        // GET: Create CV
         [Authorize]
         [HttpGet]
         public IActionResult Create()
         {
             var newCV = new CV{};
 
-            // Förbered alternativ för dropdown-menyer
             ViewBag.CompetenceOptions = _context.Competences
                 .Select(c => new SelectListItem
                 {
@@ -183,16 +177,13 @@ namespace CV_v2.Controllers
             return View(newCV);
         }
 
-        // POST: Create CV
         [HttpPost]
         public async Task<IActionResult> Create(CV newCV, List<int> Competences, List<int> Educations, List<int> WorkExperiences)
         {
            
-            //Hämtar id från den inloggade användaren
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
-            // Kolla om användaren redan har ett CV
             var existingCV = await _context.CVs.FirstOrDefaultAsync(c => c.UserId == userId);
             if (existingCV != null)
             {
@@ -200,11 +191,9 @@ namespace CV_v2.Controllers
                 return View(newCV);
             }
 
-            //Rensar modelstate annars blir den arg
             ModelState.Remove("User");
             ModelState.Remove("UserId");
 
-            //Sätter UserID i CV till den inloggade användaren
             newCV.UserId = userId;
             newCV.User = user;
 
@@ -214,7 +203,7 @@ namespace CV_v2.Controllers
                 {
                     Console.WriteLine("Valideringsfel: " + error.ErrorMessage);
                 }
-                // Om valideringen misslyckas, ladda om dropdown-alternativen
+
                 ViewBag.CompetenceOptions = _context.Competences
                     .Select(c => new SelectListItem
                     {
@@ -239,14 +228,12 @@ namespace CV_v2.Controllers
                     })
                     .ToList();
 
-                return View(newCV); // Skicka tillbaka formuläret om valideringen misslyckas
+                return View(newCV);
             }
             
             _context.CVs.Add(newCV);
             await _context.SaveChangesAsync();
 
-
-            // Koppla valda kompetenser till CV:t
             foreach (var competence in Competences)
             {
                 var cvCompetence = new CvCompetences
@@ -257,7 +244,6 @@ namespace CV_v2.Controllers
                 _context.CvCompetences.Add(cvCompetence);
             }
 
-            // Koppla valda utbildningar till CV:t
             foreach (var educations in Educations)
             {
                 var cvEducation = new CvEducation
@@ -268,7 +254,6 @@ namespace CV_v2.Controllers
                 _context.CvEducations.Add(cvEducation);
             }
 
-            // Koppla valda arbetserfarenheter till CV:t
             foreach (var workExperiences in WorkExperiences)
             {
                 var cvWorkExperience = new CvWorkExperience
@@ -279,7 +264,6 @@ namespace CV_v2.Controllers
                 _context.CvWorkExperiences.Add(cvWorkExperience);
             }
 
-            // Spara ändringar i databasen
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index", "Home");
@@ -288,7 +272,7 @@ namespace CV_v2.Controllers
         [HttpGet]
         public IActionResult AddEducation()
         {
-            return View(new Education()); // Skicka en tom Education-modell till vyn
+            return View(new Education());
         }
 
         [HttpPost]
@@ -308,7 +292,7 @@ namespace CV_v2.Controllers
         [HttpGet]
         public IActionResult AddWorkExperience()
         {
-            return View(new WorkExperience()); // Skicka en instans av WorkExperience
+            return View(new WorkExperience()); 
         }
 
         [HttpPost]
@@ -329,7 +313,7 @@ namespace CV_v2.Controllers
         public IActionResult AddCompetence()
 
         {
-            return View(new Competences()); // Skicka en instans av Competences
+            return View(new Competences()); 
         }
 
         [HttpPost]

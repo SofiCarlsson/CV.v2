@@ -23,39 +23,6 @@ namespace Projekt_CV_Site.Controllers
             this.userManager = userManager;
         }
 
-
-        //// Metod för att skicka ett meddelande anonymt meddelande
-        //[HttpPost]
-        //public async Task<IActionResult> SendMessageAnon(string content, string anonym, string tillUserId)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            Message message = new Message
-        //            {
-        //                Content = content,
-        //                SentTime = DateTime.Now,
-        //                last = false,
-        //                Anonym = anonym,
-        //                TillUserId = tillUserId
-
-        //            };
-
-        //            userContext.Messages.Add(message);
-        //            await userContext.SaveChangesAsync();
-        //            return RedirectToAction("AllMessages");
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            ModelState.AddModelError(string.Empty, $"Ett fel inträffade: {ex.Message}");
-        //        }
-        //    }
-
-            
-        //    return View("Error");
-        //}
-
         [Route("Message/SendMessage/{toUserName}")]
         [HttpGet]
         public async Task<IActionResult> SendMessage(string toUserName)
@@ -81,7 +48,6 @@ namespace Projekt_CV_Site.Controllers
 
             var toUser = await userContext.Users.FirstOrDefaultAsync(u => u.UserName == toUserName);
 
-            //Rensar modelstate annars blir den arg
             ModelState.Remove("TillUser");
             ModelState.Remove("TillUserId");
 

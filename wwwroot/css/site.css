@@ -23,13 +23,13 @@ body {
 
 .grid-container {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Två kolumner av lika storlek */
+    grid-template-columns: 1fr 1fr; 
     grid-template-rows: auto auto auto auto auto;
     gap: 20px;
 }
 
 .item-1 {
-    grid-column: 1 / span 2; /* Sträcker sig över båda kolumnerna */
+    grid-column: 1 / span 2; 
     grid-row: 1;
 }
 
@@ -55,15 +55,15 @@ body {
 }
 
 .item-4, .item-5 {
-    grid-column: 1 / span 2; /* Sträck ut över båda kolumnerna */
-    text-align: center; /* Centrerar texten inuti blocket */
+    grid-column: 1 / span 2; 
+    text-align: center; 
 }
 
 .profile-pic {
     width: 300px;
     height: 300px;  
-    object-fit: cover; /* Behåller proportioner */
-    border-radius: 10%; /* Gör bilden rund */
+    object-fit: cover; 
+    border-radius: 10%; 
 }
 
 .item-1, .item-2-1, .item-2-2, .item-3-1, .item-3-2, .item-4, .item-5 {

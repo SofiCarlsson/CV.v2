@@ -34,8 +34,8 @@ namespace CV_v2.Controllers
                 Firstname = user.Firstname,
                 Lastname = user.Lastname,
                 Email = user.Email,
-                Address = user.Address, // Lägg till detta
-                IsProfilePrivate = user.IsProfilePrivate // Lägg till detta
+                Address = user.Address,
+                IsProfilePrivate = user.IsProfilePrivate 
             };
 
             return View(model);
@@ -111,14 +111,12 @@ namespace CV_v2.Controllers
                     return NotFound("Användare hittades inte.");
                 }
 
-                // Uppdatera profilinformation
                 user.Firstname = model.Firstname;
                 user.Lastname = model.Lastname;
                 user.Email = model.Email;
                 user.Address = model.Address;
                 user.IsProfilePrivate = model.IsProfilePrivate;
 
-                // Hantera lösenordsändring om det nya lösenordet är ifyllt
                 if (!string.IsNullOrEmpty(model.OldPassword) && !string.IsNullOrEmpty(model.NewPassword) && model.NewPassword == model.ConfirmNewPassword)
                 {
                     var result = await userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
@@ -126,7 +124,6 @@ namespace CV_v2.Controllers
                     {
                         foreach (var error in result.Errors)
                         {
-                            // Lägg till varje felmeddelande till ModelState
                             ModelState.AddModelError("OldPassword", error.Description);
                         }
                         return View(model);
@@ -134,7 +131,6 @@ namespace CV_v2.Controllers
                 }
                 else
                 {
-                    // Om lösenorden inte matchar
                     ModelState.AddModelError("NewPassword", "Lösenorden matchar inte eller är inte korrekt ifyllda.");
                     return View(model);
                 }

@@ -10,11 +10,8 @@ namespace CV_v2.Models
 		public int CVId { get; set; }
         [Required(ErrorMessage = "Vänligen skriv en beskrivning.")]
         public string Description { get; set; }
-
-        //Navigering till User.
         public virtual User User { get; set; }
-        // Lägg till UserId för att koppla CV till en användare
-        public string UserId { get; set; }  // Detta ska vara samma typ som User.Id
+        public string UserId { get; set; }  
         [NotMapped]
         public IFormFile? PictureFile { get; set; }
 

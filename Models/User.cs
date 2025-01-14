@@ -11,22 +11,18 @@ namespace CV_v2.Models
 
         [Required(ErrorMessage = "Efternamn måste anges")]
         public string Lastname { get; set; }
-        // Adress för användaren
-        public string Address { get; set; } // Lägg till en enkel adress
+        public string Address { get; set; } 
 
         public bool IsProfilePrivate { get; set; }
         public string Email { get; set; }
 
         public int? CVID { get; set; }
 
-        // Relation till CV
         [ForeignKey(nameof(CVID))]
         public virtual CV? CV { get; set; }
 
-        // Samling av projekt som användaren har skapat
         public virtual ICollection<Project> CreatedProjects { get; set; } = new List<Project>();
 
-        // Samling av UserInProject för att representera användarens associationer till projekt
         public virtual ICollection<UserInProject> UserInProjects { get; set; } = new List<UserInProject>();
     }
 }

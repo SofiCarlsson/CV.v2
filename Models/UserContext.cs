@@ -9,8 +9,6 @@ namespace CV_v2.Models
         public UserContext(DbContextOptions<UserContext> options) : base(options)
         {
         }
-
-        // DbSet för alla entiteter
         public DbSet<Project> Projects { get; set; }
         public DbSet<UserInProject> UserInProjects { get; set; }
         public DbSet<User> Users { get; set; }
@@ -23,44 +21,37 @@ namespace CV_v2.Models
         public DbSet<WorkExperience> WorkExperiences { get; set; }
         public DbSet<Message> Messages { get; set; }
 
-
-        //Ska vara namnet på modellkalsserna
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Definiera tabellnamn för användare
             modelBuilder.Entity<User>().ToTable("Users");
 
-            //1-1 förhållande CV
             modelBuilder.Entity<CV>()
-                .HasOne(c => c.User)                // Ett CV har en User
-                .WithOne(u => u.CV)                 // En User har ett CV
-                .HasForeignKey<CV>(c => c.UserId)   // Använd UserId som foreign key i CV
-                .OnDelete(DeleteBehavior.Cascade);  // Om du vill att CV ska tas bort om användaren tas bort
+                .HasOne(c => c.User)                
+                .WithOne(u => u.CV)                 
+                .HasForeignKey<CV>(c => c.UserId)   
+                .OnDelete(DeleteBehavior.Cascade);  
 
-            // Konfigurera relationen mellan Project och User
             modelBuilder.Entity<Project>()
                 .HasOne(p => p.User)
-                .WithMany()  // Om en User kan ha flera projekt (1:N relation)
+                .WithMany()  
                 .HasForeignKey(p => p.CreatedBy)
-                .HasPrincipalKey(u => u.Id) // Antar att User har en "Id"-egenskap
-                .OnDelete(DeleteBehavior.Restrict);  // Ange önskat beteende vid borttagning av användare
+                .HasPrincipalKey(u => u.Id) 
+                .OnDelete(DeleteBehavior.Restrict); 
 
-            // Många-till-många relation mellan User och Project via UserInProject
             modelBuilder.Entity<UserInProject>()
                 .HasOne(uip => uip.User)
-                .WithMany(u => u.UserInProjects)  // Ändrat från UserInProject till UserInProjects
+                .WithMany(u => u.UserInProjects)  
                 .HasForeignKey(uip => uip.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<UserInProject>()
                 .HasOne(uip => uip.Project)
-                .WithMany(p => p.UsersInProject)  // Ändrat från UserInProject till UserInProjects
+                .WithMany(p => p.UsersInProject)  
                 .HasForeignKey(uip => uip.ProjectId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Många-till-många relation mellan CV och Kompetenser via CvCompetences
             modelBuilder.Entity<CvCompetences>()
                 .HasKey(cc => new { cc.CVID, cc.CompetencesID });
 
@@ -76,7 +67,6 @@ namespace CV_v2.Models
                 .HasForeignKey(cc => cc.CompetencesID)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Många-till-många relation mellan CV och Utbildning via CvEducation
             modelBuilder.Entity<CvEducation>()
                 .HasKey(ce => new { ce.CVID, ce.EducationID });
 
@@ -87,12 +77,11 @@ namespace CV_v2.Models
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<CvEducation>()
-                .HasOne(cv => cv.Education)//CV
+                .HasOne(cv => cv.Education)
                 .WithMany(e => e.CVEducations)
                 .HasForeignKey(ce => ce.EducationID)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Många-till-många relation mellan CV och ArbetsErfarenhet via CvWorkExperience
             modelBuilder.Entity<CvWorkExperience>()
                 .HasKey(cwe => new { cwe.CVID, cwe.WorkExperienceID });
 
@@ -108,16 +97,15 @@ namespace CV_v2.Models
                 .HasForeignKey(cwe => cwe.WorkExperienceID)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Definiera relationen för Message
             modelBuilder.Entity<Message>()
                 .HasOne(m => m.FranUser)
-                .WithMany() // En användare kan ha många meddelanden som avsändare
+                .WithMany() 
                 .HasForeignKey(m => m.FranUserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Message>()
                 .HasOne(m => m.TillUser)
-                .WithMany() // En användare kan ha många meddelanden som mottagare
+                .WithMany() 
                 .HasForeignKey(m => m.TillUserId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
