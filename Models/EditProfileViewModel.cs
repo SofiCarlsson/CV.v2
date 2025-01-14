@@ -6,13 +6,8 @@
         public string Lastname { get; set; }
         public string Email { get; set; }
         public bool IsProfilePrivate { get; set; }
-<<<<<<< HEAD
-
-
-
-=======
         public string Address { get; set; }
->>>>>>> main
+
         public string OldPassword { get; set; }
         public string NewPassword { get; set; }
         public string ConfirmNewPassword { get; set; }
