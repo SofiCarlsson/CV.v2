@@ -90,7 +90,7 @@ namespace CV_v2.Controllers
             return View(profileViewModel);
         }
 
-            [HttpPost]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditProfileViewModel model)
         {
@@ -104,13 +104,13 @@ namespace CV_v2.Controllers
                     return NotFound("Användare hittades inte.");
                 }
 
-                // Uppdatera profilinformation
+                // Uppdatera profilinformation utan att påverka lösenordet
                 user.Firstname = model.Firstname;
                 user.Lastname = model.Lastname;
                 user.Email = model.Email;
                 user.IsProfilePrivate = model.IsProfilePrivate;
 
-                // Hantera lösenordsändring om det nya lösenordet är ifyllt
+                // Hantera lösenordsändring endast om det gamla och nya lösenordet är ifyllt och det nya lösenordet matchar
                 if (!string.IsNullOrEmpty(model.OldPassword) && !string.IsNullOrEmpty(model.NewPassword) && model.NewPassword == model.ConfirmNewPassword)
                 {
                     var result = await userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
@@ -121,24 +121,27 @@ namespace CV_v2.Controllers
                             // Lägg till varje felmeddelande till ModelState
                             ModelState.AddModelError("OldPassword", error.Description);
                         }
-                        return View(model);
+                        return View(model); // Om lösenordsändringen misslyckades, visa felmeddelanden
                     }
                 }
-                else
+                else if (!string.IsNullOrEmpty(model.NewPassword) || !string.IsNullOrEmpty(model.ConfirmNewPassword))
                 {
-                    // Om lösenorden inte matchar
+                    // Om ett nytt lösenord är ifyllt men de inte matchar, lägg till fel
                     ModelState.AddModelError("NewPassword", "Lösenorden matchar inte eller är inte korrekt ifyllda.");
                     return View(model);
                 }
 
+                // Spara ändringarna av användarens profil
                 await _context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Profilen har uppdaterats.";
                 return RedirectToAction("Edit");
             }
 
+            // Om modellen inte är giltig, visa formuläret med aktuella fel
             return View(model);
         }
+
 
 
 
