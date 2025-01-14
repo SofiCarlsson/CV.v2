@@ -26,11 +26,11 @@
 {
     <a asp-action="Login" asp-controller="Account">Logga in</a>
 }
-<br />
-<a asp-action="Create" asp-controller="CV">Skapa CV</a>
 
 <br />
 <br />
+<br />
+
 <div class="info-box">
     <h4>Filtrera CVs</h4>
     <p>Här kan du filtrera CVn och få fram alla projekt som den personen ingår i via förnamn. Ange ett namn i sökfältet och tryck på "Filtrera".</p>
@@ -115,7 +115,7 @@
                                 @if (!User.Identity.IsAuthenticated && user.User.IsProfilePrivate)
                                 {
                                     <span>Dold profil<br /></span>
-                               }
+                                }
                                 else
                                 {
                                     @user.User.Firstname @user.User.Lastname
